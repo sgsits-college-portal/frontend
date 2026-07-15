@@ -126,4 +126,28 @@ export class AuthService {
       return null;
     }
   }
+
+  /**
+   * Fetch all users from the auth service database (Admin only)
+   */
+  getUsers(): Observable<any[]> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
+    return this.http.get<any[]>(`http://localhost:8080/api/auth/users`, { headers });
+  }
+
+  /**
+   * Update a user in the auth service database (Admin only)
+   */
+  updateUser(id: number, userData: any): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
+    return this.http.put(`http://localhost:8080/api/auth/users/${id}`, userData, { headers });
+  }
+
+  /**
+   * Delete a user from the auth service database (Admin only)
+   */
+  deleteUser(id: number): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
+    return this.http.delete(`http://localhost:8080/api/auth/users/${id}`, { headers });
+  }
 }

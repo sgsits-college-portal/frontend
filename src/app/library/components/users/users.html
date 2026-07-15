@@ -1,0 +1,55 @@
+<div class="view-header" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+  <div>
+    <h3 class="view-title">Registered Library Members</h3>
+    <p class="view-subtitle">View registered students, teachers, and librarians enrolled in the system.</p>
+  </div>
+</div>
+
+<div class="custom-card" style="padding: 0;">
+  <div class="custom-table-container" style="border: none; box-shadow: none;">
+    <table class="custom-table">
+      <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Name</th>
+          <th>Email Address</th>
+          <th>System Role</th>
+          <th>Access Key / ID Info</th>
+          <th class="text-end" style="padding-right: 1.5rem;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of userService.users(); track user.id) {
+          <tr>
+            <td><code>{{ user.id }}</code></td>
+            <td>
+              <div class="fw-bold text-main">{{ user.name }}</div>
+            </td>
+            <td>{{ user.email }}</td>
+            <td>
+              <span class="badge-solid" [class.blue]="user.role === 'Student'" [class.brown]="user.role === 'Faculty'" [class.red]="user.role === 'Librarian'">
+                {{ user.role }}
+              </span>
+            </td>
+            <td>
+              @if (user.role === 'Student') {
+                <span class="small text-muted">Enrollment: <code>{{ user.enrollmentNo }}</code></span>
+              } @else if (user.role === 'Faculty') {
+                <span class="small text-muted">Faculty ID: <code>{{ user.facultyId }}</code></span>
+              } @else {
+                <span class="small text-muted">Password Protected</span>
+              }
+            </td>
+            <td class="text-end" style="padding-right: 1.5rem;">
+              @if (user.id === currentUser()?.id) {
+                <span class="badge-solid green" style="font-size: 0.75rem; padding: 0.15rem 0.45rem;">Logged In</span>
+              } @else {
+                <span class="badge-solid green" style="font-size: 0.75rem; padding: 0.15rem 0.45rem;">Active</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

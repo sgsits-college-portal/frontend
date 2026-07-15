@@ -413,3 +413,109 @@
     max-width: 100%;
   }
 }
+
+/* Split Grid Layout */
+.dashboard-grid-layout {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid-layout {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+}
+
+/* Profile Card component */
+.profile-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.profile-card-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid var(--border-card);
+  padding-bottom: 1.25rem;
+}
+
+.profile-avatar-large {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: var(--accent-light);
+  border: 1px solid var(--border-card);
+  color: var(--accent);
+  font-size: 1.6rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.profile-card-header h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.35rem;
+}
+
+/* Profile Details List */
+.profile-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.profile-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed var(--border-card);
+}
+
+.profile-detail-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.profile-detail-item .detail-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.profile-detail-item .detail-value {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.profile-detail-item .detail-value code {
+  background-color: #F3F4F6;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.profile-detail-item .status-active {
+  color: var(--alert-success);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
