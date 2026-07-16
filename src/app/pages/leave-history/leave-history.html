@@ -1,109 +1,120 @@
-<div class="min-h-screen flex bg-[#f8f9ff]">
+<main class="leave-main">
 
-  <aside class="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col bg-white border-r border-[#c3c6d7]/40 shadow-sm z-50 py-6">
+  <div class="header-back-row">
 
-    <div class="px-6 mb-8">
-      <h1 class="text-xl font-bold text-[#004ac6]">Leaf</h1>
-      <p class="text-[10px] text-[#585f68] uppercase font-bold tracking-widest mt-0.5">
-        Leave Management
-      </p>
-    </div>
+    <a routerLink="/dashboard" class="back-link">
+      <i class="bi bi-arrow-left"></i>
+      Back to Dashboard
+    </a>
 
-    <nav class="flex-1 flex flex-col gap-1 px-2">
+    <h2>Leave History</h2>
 
-      <a routerLink="/dashboard"
-         class="flex items-center gap-3 px-4 py-3 text-[#585f68] hover:bg-[#eff4ff]/50 hover:text-[#004ac6] transition-all rounded-r-xl cursor-pointer">
-        <span class="material-symbols-outlined text-xl">dashboard</span>
-        <span class="text-sm">Dashboard</span>
-      </a>
+    <p class="page-subtitle">
+      Review all your leave requests and their approval status.
+    </p>
 
-      <a routerLink="/apply-leave"
-         class="flex items-center gap-3 px-4 py-3 text-[#585f68] hover:bg-[#eff4ff]/50 hover:text-[#004ac6] transition-all rounded-r-xl cursor-pointer">
-        <span class="material-symbols-outlined text-xl">calendar_add_on</span>
-        <span class="text-sm">Apply Leave</span>
-      </a>
+  </div>
 
-      <a routerLink="/leave-history"
-         class="flex items-center gap-3 px-4 py-3 border-l-4 border-[#004ac6] bg-[#eff4ff] text-[#004ac6] font-semibold rounded-r-xl cursor-pointer">
-        <span class="material-symbols-outlined text-xl">history</span>
-        <span class="text-sm">Leave History</span>
-      </a>
+  <div class="form-card">
 
-      <a routerLink="/admin-dashboard"
-         class="flex items-center gap-3 px-4 py-3 text-[#585f68] hover:bg-[#eff4ff]/50 hover:text-[#004ac6] transition-all rounded-r-xl cursor-pointer">
-        <span class="material-symbols-outlined text-xl">rule</span>
-        <span class="text-sm">Admin View</span>
-      </a>
+    <div class="table-header">
 
-    </nav>
+      <h3>My Leave Applications</h3>
 
-    <div class="px-4 mt-auto">
-   <a routerLink="/login"
-   class="flex items-center gap-3 px-4 py-3 text-[#585f68] hover:bg-red-50 hover:text-red-600 transition-all rounded-xl cursor-pointer">
+      <button
+        routerLink="/leave/apply"
+        class="btn btn-submit">
 
-  <span class="material-symbols-outlined text-xl">logout</span>
-  <span class="text-sm font-semibold">Logout</span>
+        <i class="bi bi-plus-circle"></i>
 
-</a>
-    </div>
+        Apply Leave
 
-  </aside>
-
-  <main class="flex-1 md:ml-64 p-6 lg:p-8">
-    <header class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-      <div>
-        <h3 class="text-2xl font-bold text-[#0b1c30]">My Leave History</h3>
-        <p class="text-xs text-[#585f68] mt-0.5">Review and trace all your historically logged time off applications.</p>
-      </div>
-      <button routerLink="/apply-leave" class="px-4 py-2.5 bg-[#2563eb] text-white font-semibold text-xs rounded-xl hover:bg-[#004ac6] transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/10">
-        <span class="material-symbols-outlined text-sm font-bold">add</span> Request Absence
       </button>
-    </header>
 
-    <div class="bg-white rounded-2xl border border-[#c3c6d7]/30 shadow-sm overflow-hidden">
-      <div class="overflow-x-auto" *ngIf="leaves && leaves.length > 0">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-[#eff4ff]/40 border-b border-[#c3c6d7]/30">
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#585f68]">Leave Target</th>
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#585f68]">Duration Timeline</th>
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#585f68]">Reason Statement</th>
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#585f68] text-right">Approval Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[#c3c6d7]/20">
-            <tr *ngFor="let leave of leaves" class="hover:bg-[#f8f9ff] transition-all">
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-8 h-8 rounded-lg bg-[#eff4ff] flex items-center justify-center text-[#004ac6] font-bold text-xs">#{{ leave.id }}</div>
-                  <span class="text-sm font-semibold text-[#0b1c30]">{{ leave.leaveType }}</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 text-xs text-[#0b1c30]">
-                <div class="font-medium">{{ leave.startDate }}</div>
-                <div class="text-[#585f68] mt-0.5">until {{ leave.endDate }}</div>
-              </td>
-              <td class="px-6 py-4 text-xs text-[#585f68] max-w-xs truncate">{{ leave.reason || '—' }}</td>
-              <td class="px-6 py-4 text-right">
-                <span class="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                  [ngClass]="{
-                    'bg-amber-50 text-amber-700 border border-amber-200': leave.status?.toLowerCase() === 'pending',
-                    'bg-green-50 text-green-700 border border-green-200': leave.status?.toLowerCase() === 'approved',
-                    'bg-red-50 text-red-700 border border-red-200': leave.status?.toLowerCase() === 'rejected'
-                  }">
-                  {{ leave.status }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="text-center py-16 px-4 space-y-3" *ngIf="!leaves || leaves.length === 0">
-        <div class="text-4xl">📂</div>
-        <h5 class="text-sm font-bold text-[#0b1c30]">No log records available</h5>
-        <p class="text-xs text-[#585f68] max-w-xs mx-auto">Your time off ledger dashboard is completely empty. Click above to apply.</p>
-      </div>
     </div>
-  </main>
-</div>
+
+    <div class="table-responsive" *ngIf="leaves && leaves.length">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>ID</th>
+
+            <th>Leave Type</th>
+
+            <th>Start Date</th>
+
+            <th>End Date</th>
+
+            <th>Reason</th>
+
+            <th>Status</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let leave of leaves">
+
+            <td>#{{leave.id}}</td>
+
+            <td>{{leave.leaveType}}</td>
+
+            <td>{{leave.startDate}}</td>
+
+            <td>{{leave.endDate}}</td>
+
+            <td>{{leave.reason}}</td>
+
+            <td>
+
+              <span
+
+                class="status"
+
+                [ngClass]="{
+
+                  'pending': leave.status==='Pending',
+
+                  'approved': leave.status==='Approved',
+
+                  'rejected': leave.status==='Rejected'
+
+                }">
+
+                {{leave.status}}
+
+              </span>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <div class="empty-state" *ngIf="!leaves || leaves.length===0">
+
+      <i class="bi bi-inbox"></i>
+
+      <h3>No Leave Applications</h3>
+
+      <p>
+
+        You haven't applied for any leave yet.
+
+      </p>
+
+    </div>
+
+  </div>
+
+</main>

@@ -93,13 +93,13 @@ export class Dashboard {
 
     // 4. Leave Service (Common for all roles, Active for Leave managers, Admin, and show for others)
     list.push({
-      id: 3,
-      title: 'Leave Service',
-      description: 'Apply for academic or official leaves and view instant approval status workflows.',
-      iconClass: 'bi-file-earmark-check-fill',
-      badge: r === 'ADMIN' || (r === 'STAFF' && sr === 'LEAVE_MANAGER') ? 'Active' : 'Coming Soon',
-      url: '/leave'
-    });
+  id: 3,
+  title: 'Leave Service',
+  description: 'Apply for academic or official leaves and view instant approval status workflows.',
+  iconClass: 'bi-file-earmark-check-fill',
+  badge: 'Active',
+  url: '/leave/apply'
+});
 
     // 5. Complaint Service (Common for all roles, Active for all authenticated users)
     list.push({
@@ -170,7 +170,9 @@ export class Dashboard {
         this.router.navigate([route]);
       }
     }
-    // leave routes are mock for now
+  else if (service.id === 3 && service.badge === 'Active') {
+  this.router.navigate(['/leave/apply']);
+}
   }
 
   toggleUserManagement(show: boolean): void {
