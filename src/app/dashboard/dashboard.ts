@@ -1,8 +1,8 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 interface ServiceItem {
   id: number;
@@ -24,12 +24,13 @@ export class Dashboard {
   readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
+
   // Get active session user
   readonly user = this.authService.currentUser;
 
   // Track if Admin is viewing User Management
   readonly showUserManagement = signal<boolean>(false);
-  
+
   // Admin User Management State
   readonly usersList = signal<any[]>([]);
   readonly searchQuery = signal<string>('');
@@ -86,8 +87,8 @@ export class Dashboard {
       title: 'Event Service',
       description: 'Browse upcoming campus events, technical fests, and register in a tap.',
       iconClass: 'bi-calendar-event-fill',
-      badge: r === 'ADMIN' || (r === 'STAFF' && sr === 'EVENT_MANAGER') ? 'Active' : 'Coming Soon',
-      url: '/event'
+      badge: 'Active',
+      url: '/events'
     });
 
     // 4. Leave Service (Common for all roles, Active for Leave managers, Admin, and show for others)
@@ -118,7 +119,7 @@ export class Dashboard {
     const query = this.searchQuery().toLowerCase().trim();
     const list = this.usersList();
     if (!query) return list;
-    return list.filter(u => 
+    return list.filter(u =>
       u.fullName.toLowerCase().includes(query) ||
       u.username.toLowerCase().includes(query) ||
       (u.email && u.email.toLowerCase().includes(query)) ||
@@ -136,6 +137,10 @@ export class Dashboard {
       this.router.navigate(['/library']);
     }
     // event, leave, complaint routes are mock for now
+    else if (service.id === 2 && service.badge === 'Active') {
+        this.router.navigate(['/events']);
+        return;
+    }
   }
 
   toggleUserManagement(show: boolean): void {
@@ -244,6 +249,20 @@ export class Dashboard {
     }
   }
 
+  deleteUser(user: any): void {
+    if (confirm(`Are you sure you want to remove the portal account for "${user.fullName}"?`)) {
+      this.authService.deleteUser(user.id).subscribe({
+        next: () => {
+          this.loadUsers();
+        },
+        error: (err) => {
+          alert(err.error?.message || 'Failed to delete user.');
+        }
+      });
+    }
+
+
+  }
   logout(): void {
     this.authService.logout();
   }
