@@ -135,12 +135,12 @@
   .custom-header {
     padding: 1rem 1.5rem;
   }
-  
+
   .user-profile-card {
     border-right: none;
     padding-right: 0;
   }
-  
+
   .user-name {
     display: none;
   }
