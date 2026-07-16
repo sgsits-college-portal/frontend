@@ -31,7 +31,40 @@
       </div>
     </div>
 
-
-
   </div>
 </header>
+
+<div class="sub-nav-bar">
+  <div class="sub-nav-container">
+    <div class="nav-links">
+
+      <a routerLink="/events"
+         routerLinkActive="active-tab"
+         [routerLinkActiveOptions]="{exact: true}"
+         class="nav-tab">
+        <i class="bi bi-calendar-event-fill"></i>
+        Events
+      </a>
+
+      @if (user()?.role === 'ADMIN' ||
+      (user()?.role === 'STAFF' &&
+      user()?.subRole === 'EVENT_MANAGER')) {
+
+      <a routerLink="/events/create"
+         routerLinkActive="active-tab"
+         class="nav-tab">
+        <i class="bi bi-plus-circle-fill"></i>
+        Create Event
+      </a>
+      }
+
+      <a routerLink="/events/participants"
+         routerLinkActive="active-tab"
+         class="nav-tab">
+        <i class="bi bi-people-fill"></i>
+        Registrations
+      </a>
+
+    </div>
+  </div>
+</div>
