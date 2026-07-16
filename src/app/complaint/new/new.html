@@ -1,0 +1,134 @@
+<app-complaint-header></app-complaint-header>
+
+
+<main class="new-complaint-main">
+  <div class="header-back-row">
+    <a routerLink="/complaints/my" class="back-link">
+      <i class="bi bi-arrow-left"></i> Back to My Complaints
+    </a>
+    <h2>File a Campus Grievance</h2>
+  </div>
+
+  <div class="form-card">
+    <!-- Success Alert -->
+    <div *ngIf="successMessage() as success" class="alert-success-box">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ success }}</span>
+    </div>
+
+    <!-- Error Alert -->
+    <div *ngIf="errorMessage() as error" class="alert-danger-box">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ error }}</span>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #complaintForm="ngForm">
+      <div class="form-grid">
+        <!-- Title -->
+        <div class="form-group span-2">
+          <label for="title">Complaint Title <span class="required">*</span></label>
+          <input 
+            type="text" 
+            id="title" 
+            name="title" 
+            [(ngModel)]="title" 
+            required 
+            minlength="5"
+            maxlength="255"
+            placeholder="Summarize the issue (e.g. Broken water tap in hostel block A)" />
+          <small class="form-hint">Must be between 5 and 255 characters.</small>
+        </div>
+
+        <!-- Category -->
+        <div class="form-group">
+          <label for="category">Category <span class="required">*</span></label>
+          <select id="category" name="category" [(ngModel)]="category" required>
+            <option value="" disabled selected>Select category...</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+        </div>
+
+        <!-- Priority -->
+        <div class="form-group">
+          <label for="priority">Priority <span class="required">*</span></label>
+          <select id="priority" name="priority" [(ngModel)]="priority" required>
+            <option value="LOW">Low</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="HIGH">High</option>
+            <option value="CRITICAL">Critical</option>
+          </select>
+        </div>
+
+        <!-- Location -->
+        <div class="form-group span-2">
+          <label for="location">Location / Room (Optional)</label>
+          <input 
+            type="text" 
+            id="location" 
+            name="location" 
+            [(ngModel)]="location" 
+            placeholder="e.g. Hostel 1, Room 104 or CS Block Lab 3" />
+        </div>
+
+        <!-- Description -->
+        <div class="form-group span-2">
+          <label for="description">Grievance Description <span class="required">*</span></label>
+          <textarea 
+            id="description" 
+            name="description" 
+            [(ngModel)]="description" 
+            required 
+            minlength="20"
+            rows="5"
+            placeholder="Describe the issue in detail, including steps to reproduce or timeline of the issue..."></textarea>
+          <small class="form-hint">Provide at least 20 characters of explanation.</small>
+        </div>
+
+        <!-- Drag & Drop Upload Zone -->
+        <div class="form-group span-2">
+          <label>Attach Supporting Images (Optional)</label>
+          <div 
+            class="dropzone" 
+            [class.dragover]="dragOver()"
+            (dragover)="onDragOver($event)" 
+            (dragleave)="onDragLeave($event)" 
+            (drop)="onDrop($event)">
+            
+            <i class="bi bi-cloud-arrow-up-fill"></i>
+            <p>Drag & Drop your images here or <label for="file-upload" class="file-label">Browse Files</label></p>
+            <input 
+              type="file" 
+              id="file-upload" 
+              (change)="onFileSelected($event)" 
+              multiple 
+              accept="image/*" 
+              style="display: none;" />
+            <span class="file-hint">Only JPG, PNG, WEBP images allowed. Max 5 attachments.</span>
+          </div>
+
+          <!-- Selected Files Previews -->
+          <div class="previews-container" *ngIf="filePreviews.length > 0">
+            <div *ngFor="let p of filePreviews; let i = index" class="preview-item">
+              <img [src]="p.url" alt="Preview" />
+              <button type="button" class="btn-remove" (click)="removeFile(i)" title="Remove Image">
+                <i class="bi bi-x-circle-fill"></i>
+              </button>
+              <span class="file-name">{{ p.file.name | slice:0:15 }}{{ p.file.name.length > 15 ? '...' : '' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button type="button" routerLink="/complaints/my" class="btn btn-secondary" [disabled]="isSubmitting()">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-submit" [disabled]="complaintForm.invalid || isSubmitting()">
+          <span *ngIf="isSubmitting()" class="spinner-sm"></span>
+          <span>{{ isSubmitting() ? 'Submitting...' : 'File Complaint' }}</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</main>

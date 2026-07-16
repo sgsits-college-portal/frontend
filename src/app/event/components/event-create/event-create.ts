@@ -7,6 +7,8 @@ import { NotificationService } from '../../services/notification.service';
 import { UserNotificationService } from '../../services/user-notification.service';
 import { EventAuthService } from '../../services/event-auth.service';
 
+import { EventHeaderComponent } from '../header/header';
+
 /**
  * EventCreateComponent — allows ADMIN or EVENT_MANAGER to create a new event.
  *
@@ -19,8 +21,9 @@ import { EventAuthService } from '../../services/event-auth.service';
 @Component({
   selector: 'app-event-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, EventHeaderComponent],
   template: `
+    <app-event-header></app-event-header>
     <div class="container-fluid py-2">
       <!-- Back link -->
       <div class="mb-4">

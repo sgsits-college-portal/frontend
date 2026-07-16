@@ -1,0 +1,121 @@
+<app-complaint-header></app-complaint-header>
+
+
+<main class="hod-main-container">
+  <!-- Banner -->
+  <div class="hod-hero-section">
+    <div class="hero-left-content">
+      <h2>Department Sign-Off Dashboard</h2>
+      <p>Verify completed works submitted by maintenance technicians and sign-off resolved tickets.</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="filters-card-wrapper" *ngIf="complaints().length > 0">
+    <div class="filters-row">
+      <span class="stat-pill">Pending Approvals: <strong>{{ complaints().length }}</strong></span>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state-wrapper">
+    <div class="spinner"></div>
+    <h3>Loading pending approvals...</h3>
+    <p *ngIf="isWarmingUp()" class="warmup-warning">
+      <i class="bi bi-hourglass-split"></i> Server is warming up (cold start)...
+    </p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage() as errorMsg" class="error-alert-wrapper">
+    <i class="bi bi-exclamation-octagon-fill"></i>
+    <div class="error-text-content">
+      <h4>Fetch Error</h4>
+      <p>{{ errorMsg }}</p>
+    </div>
+    <button (click)="loadPendingApprovals()" class="btn-retry">Retry</button>
+  </div>
+
+  <!-- Main Content Cards List -->
+  <div *ngIf="!isLoading() && !errorMessage()">
+    <div *ngIf="complaints().length > 0; else noApprovals" class="approvals-grid">
+      
+      <!-- HOD Ticket Card -->
+      <div *ngFor="let item of complaints()" class="approval-card">
+        <div class="card-header-row">
+          <span class="id-tag"><code>#{{ item.id }}</code></span>
+          <span class="badge" [ngClass]="getPriorityBadgeClass(item.priority)">
+            {{ item.priority }}
+          </span>
+        </div>
+
+        <h3 class="card-title">{{ item.title }}</h3>
+        
+        <div class="card-metadata">
+          <div class="meta-item"><i class="bi bi-tag-fill"></i> <strong>{{ item.category }}</strong></div>
+          <div class="meta-item" *ngIf="item.location"><i class="bi bi-geo-alt-fill"></i> <span>{{ item.location }}</span></div>
+          <div class="meta-item"><i class="bi bi-person"></i> <span>Student: {{ item.userId }}</span></div>
+        </div>
+
+        <div class="tech-report-box">
+          <div class="tech-header">
+            <i class="bi bi-tools text-primary"></i> 
+            <strong>Technician Report ({{ item.adminId }}):</strong>
+          </div>
+          <p class="report-content">"{{ item.adminNote || 'No explanation provided.' }}"</p>
+        </div>
+
+        <div class="card-footer-row">
+          <span class="filed-date">Submitted: {{ item.updatedAt | date:'mediumDate' }}</span>
+          
+          <div class="action-btn-row">
+            <button class="btn-action resolve-btn" (click)="openResolveModal(item)">
+              <i class="bi bi-patch-check-fill"></i> Sign-Off / Resolve
+            </button>
+            <button [routerLink]="['/complaints', item.id]" class="btn-action details-btn">
+              <i class="bi bi-eye"></i> Details
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Empty State -->
+    <ng-template #noApprovals>
+      <div class="empty-state-wrapper">
+        <i class="bi bi-patch-check-fill" style="font-size: 3rem; color: var(--alert-success);"></i>
+        <h3>No Pending Sign-Offs</h3>
+        <p>Everything is caught up! There are no repairs currently awaiting your verification approval.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Sign Off Modal -->
+  <div *ngIf="showResolveModal()" class="custom-modal-backdrop" (click)="showResolveModal.set(false)"></div>
+  <div *ngIf="showResolveModal()" class="custom-modal">
+    <div class="custom-modal-header">
+      <h4>HOD Verification Sign-Off: Complaint #{{ activeComplaintForResolve?.id }}</h4>
+      <button class="btn-icon-close" (click)="showResolveModal.set(false)"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="custom-modal-body">
+      <label for="hodNote">Approval Note / Comment <span class="required">*</span></label>
+      <textarea 
+        id="hodNote" 
+        [(ngModel)]="hodNoteInput" 
+        rows="4" 
+        placeholder="Add verification signature notes (e.g. verified the air-conditioner repair, compressor is cooling fine now)..."
+        class="form-control-textarea"></textarea>
+      <small class="form-hint">Provide at least 10 characters.</small>
+    </div>
+    <div class="custom-modal-footer">
+      <button class="btn btn-secondary" (click)="showResolveModal.set(false)">Cancel</button>
+      <button 
+        class="btn btn-primary" 
+        [disabled]="isActionSubmitting() || !hodNoteInput || hodNoteInput.trim().length < 10"
+        (click)="onResolveSubmit()">
+        <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Verify & Close Ticket
+      </button>
+    </div>
+  </div>
+</main>

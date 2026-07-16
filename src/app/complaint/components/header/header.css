@@ -1,0 +1,188 @@
+.custom-header {
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-card);
+  padding: 1rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%);
+  color: #FFFFFF;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-card);
+  font-size: 1.3rem;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+}
+
+.brand-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+.brand-subtitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.user-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-right: 1.25rem;
+  border-right: 1px solid var(--border-card);
+}
+
+.avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: var(--accent-light);
+  border: 1px solid var(--border-card);
+  color: var(--accent);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.user-role-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  width: fit-content;
+  margin-top: 0.1rem;
+}
+
+.user-role-badge.student {
+  background-color: rgba(29, 78, 216, 0.1);
+  color: var(--primary);
+}
+
+.user-role-badge.staff, .user-role-badge.librarian {
+  background-color: var(--alert-success-light);
+  color: var(--alert-success);
+}
+
+.user-role-badge.faculty, .user-role-badge.head, .user-role-badge.hod {
+  background-color: rgba(158, 130, 90, 0.12);
+  color: var(--accent);
+}
+
+.user-role-badge.admin {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--alert-danger);
+}
+
+.sub-role-tag {
+  font-size: 0.65rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .custom-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .user-profile-card {
+    border-right: none;
+    padding-right: 0;
+  }
+  
+  .user-name {
+    display: none;
+  }
+}
+
+/* Sub Navigation Row styles */
+.sub-nav-bar {
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-card);
+  padding: 0 3rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.sub-nav-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-tab:hover {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.active-tab {
+  color: var(--primary) !important;
+  border-bottom-color: var(--primary);
+}

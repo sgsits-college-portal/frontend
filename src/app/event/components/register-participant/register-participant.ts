@@ -12,11 +12,14 @@ import { Event } from '../../models/event.model';
 import { PortalUser } from '../../models/user.model';
 import { Status } from '../../models/status.enum';
 
+import { EventHeaderComponent } from '../header/header';
+
 @Component({
   selector: 'app-register-participant',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, EventHeaderComponent],
   template: `
+    <app-event-header></app-event-header>
     <div class="cyber-workspace container-fluid py-4">
       <!-- Back Link -->
       <div class="mb-4">

@@ -1,0 +1,76 @@
+<header class="custom-header">
+  <!-- Brand & Logo -->
+  <div class="brand-section" (click)="backToDashboard()" style="cursor: pointer;">
+    <div class="brand-logo">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+    <div>
+      <h1 class="brand-title">SGSITS Complaint Portal</h1>
+      <span class="brand-subtitle">Unified Campus Grievance Redressal</span>
+    </div>
+  </div>
+
+  <!-- User Profile & Action Box -->
+  <div class="header-actions">
+    <button (click)="backToDashboard()" class="btn btn-outline-secondary btn-sm" title="Back to Dashboard" style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 500;">
+      <i class="bi bi-grid-fill"></i>
+      <span>Dashboard</span>
+    </button>
+
+    <div class="nav-user-actions" *ngIf="user() as currentUser">
+      <div class="user-profile-card" style="border-right: none;">
+        <div class="avatar-circle">
+          {{ currentUser.fullName.charAt(0) }}
+        </div>
+        <div class="user-meta">
+          <span class="user-name">{{ currentUser.fullName }}</span>
+          <span class="user-role-badge" [ngClass]="currentUser.role.toLowerCase()">
+            {{ currentUser.role }} <span *ngIf="currentUser.subRole && currentUser.subRole !== 'NONE'" class="sub-role-tag">({{ currentUser.subRole }})</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Role-Based Sub-Navigation Bar -->
+<div class="sub-nav-bar" *ngIf="user() as currentUser">
+  <div class="sub-nav-container">
+    <div class="nav-links">
+      <a routerLink="/complaints/feed" routerLinkActive="active-tab" class="nav-tab">
+        <i class="bi bi-megaphone-fill"></i> Public Feed
+      </a>
+      
+      <!-- Users who can file complaints (All except Admin/Technicians) -->
+      <ng-container *ngIf="canFile(currentUser)">
+        <a routerLink="/complaints/my" routerLinkActive="active-tab" class="nav-tab">
+          <i class="bi bi-folder-fill"></i> My Complaints
+        </a>
+        <a routerLink="/complaints/new" routerLinkActive="active-tab" class="nav-tab">
+          <i class="bi bi-plus-circle-fill"></i> File a Complaint
+        </a>
+      </ng-container>
+
+      <!-- Admin / Super Admin Links -->
+      <ng-container *ngIf="isAdmin(currentUser)">
+        <a routerLink="/admin/complaints" routerLinkActive="active-tab" class="nav-tab">
+          <i class="bi bi-sliders"></i> Admin Dashboard
+        </a>
+      </ng-container>
+
+      <!-- Technician Links -->
+      <ng-container *ngIf="isTechnician(currentUser)">
+        <a routerLink="/technician/complaints" routerLinkActive="active-tab" class="nav-tab">
+          <i class="bi bi-tools"></i> My Assigned Tasks
+        </a>
+      </ng-container>
+
+      <!-- HOD / Department Head Links -->
+      <ng-container *ngIf="isHOD(currentUser)">
+        <a routerLink="/hod/approvals" routerLinkActive="active-tab" class="nav-tab">
+          <i class="bi bi-patch-check-fill"></i> HOD Approvals
+        </a>
+      </ng-container>
+    </div>
+  </div>
+</div>
