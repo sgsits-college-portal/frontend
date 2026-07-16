@@ -1,0 +1,30 @@
+<header class="navbar-header">
+  <div class="nav-brand">
+    <div class="logo-box">
+      <i class="bi bi-mortarboard-fill"></i>
+    </div>
+    <div class="brand-info">
+      <h1>SGSITS Portal</h1>
+      <span class="system-tag">Academic Gateway</span>
+    </div>
+  </div>
+
+  <!-- User Profile & Action Box -->
+  <div class="nav-user-actions" *ngIf="user() as currentUser">
+    <div class="user-profile-card">
+      <div class="avatar-circle">
+        {{ currentUser.fullName.charAt(0) }}
+      </div>
+      <div class="user-meta">
+        <span class="user-name">{{ currentUser.fullName }}</span>
+        <span class="user-role-badge" [ngClass]="currentUser.role.toLowerCase()">
+            {{ currentUser.role }}
+          </span>
+      </div>
+    </div>
+    <button class="btn-logout" (click)="logout()" title="Log Out">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Logout</span>
+    </button>
+  </div>
+</header>
