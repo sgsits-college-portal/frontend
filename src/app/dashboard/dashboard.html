@@ -1,35 +1,5 @@
 <div class="dashboard-wrapper">
-  <!-- Top Navigation Bar -->
-  <header class="navbar-header">
-    <div class="nav-brand">
-      <div class="logo-box">
-        <i class="bi bi-mortarboard-fill"></i>
-      </div>
-      <div class="brand-info">
-        <h1>SGSITS Portal</h1>
-        <span class="system-tag">Academic Gateway</span>
-      </div>
-    </div>
 
-    <!-- User Profile & Action Box -->
-    <div class="nav-user-actions" *ngIf="user() as currentUser">
-      <div class="user-profile-card">
-        <div class="avatar-circle">
-          {{ currentUser.fullName.charAt(0) }}
-        </div>
-        <div class="user-meta">
-          <span class="user-name">{{ currentUser.fullName }}</span>
-          <span class="user-role-badge" [ngClass]="currentUser.role.toLowerCase()">
-            {{ currentUser.role }}
-          </span>
-        </div>
-      </div>
-      <button class="btn-logout" (click)="logout()" title="Log Out">
-        <i class="bi bi-box-arrow-right"></i>
-        <span>Logout</span>
-      </button>
-    </div>
-  </header>
 
   <!-- Dashboard Main Content Area -->
   <main class="dashboard-main">
@@ -52,12 +22,12 @@
       </div>
 
       <div class="services-card-grid">
-        <div *ngFor="let service of services()" 
-             class="service-card" 
+        <div *ngFor="let service of services()"
+             class="service-card"
              [class.active-service]="service.badge === 'Active'"
              [class.coming-service]="service.badge === 'Coming Soon'"
              (click)="openService(service)">
-          
+
           <!-- Card Header & Badge -->
           <div class="card-status-row">
             <span class="status-pill" [class.pill-active]="service.badge === 'Active'">
@@ -76,7 +46,7 @@
             <h3>{{ service.title }}</h3>
             <p>{{ service.description }}</p>
           </div>
-          
+
           <!-- Card Action Footer -->
           <div class="card-action-bar" *ngIf="service.badge === 'Active'">
             <span>Launch Service</span>

@@ -1,6 +1,7 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 interface ServiceItem {
   id: number;
@@ -21,6 +22,8 @@ interface ServiceItem {
 export class Dashboard {
   readonly authService = inject(AuthService);
 
+  readonly router = inject(Router);
+
   // Get active session user
   readonly user = this.authService.currentUser;
 
@@ -39,7 +42,8 @@ export class Dashboard {
       title: 'Event Service',
       description: 'Browse upcoming campus events, technical fests, and register in a tap.',
       iconClass: 'bi-calendar-event-fill',
-      badge: 'Coming Soon'
+      badge: 'Active',
+      url: '/events'
     },
     {
       id: 3,
@@ -70,12 +74,17 @@ export class Dashboard {
           `&subRole=${encodeURIComponent(u.subRole || '')}` +
           `&fullName=${encodeURIComponent(u.fullName)}` +
           `&email=${encodeURIComponent(u.email || '')}`;
-        
+
         window.location.href = redirectUrl;
       } else {
         window.location.href = service.url;
       }
     }
+
+    if (service.id === 2) {
+          this.router.navigate(['/events']);
+          return;
+      }
   }
 
   logout(): void {

@@ -31,7 +31,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
 
-  private readonly baseUrl = 'http://localhost:8080/auth';
+  private readonly baseUrl = 'https://gateway-service-sc5r.onrender.com/auth';
 
   // Create signals to expose login state reactively
   readonly currentUser = signal<UserSession | null>(this.getStoredUser());
