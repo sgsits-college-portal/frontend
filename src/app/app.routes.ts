@@ -73,6 +73,11 @@ export const routes: Routes = [
 
   // ─── Catch-all ─────────────────────────────────────────────────────────────
   {
+    path: 'library',
+    loadComponent: () => import('./library/library.component').then(m => m.LibraryComponent),
+    canActivate: [authGuard]
+  },
+  {
     path: '**',
     redirectTo: ''
   }
