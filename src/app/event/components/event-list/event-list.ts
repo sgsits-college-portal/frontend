@@ -9,6 +9,7 @@ import { RegistrationService } from '../../services/registration.service';
 import { NotificationService } from '../../services/notification.service';
 import { EventAuthService } from '../../services/event-auth.service';
 import { Event } from '../../models/event.model';
+import { EventNavbarComponent } from '../event-bar/event-bar';
 
 import { EventHeaderComponent } from '../header/header';
 
@@ -19,10 +20,14 @@ interface EventWithCounts extends Event {
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, EventHeaderComponent],
+  imports: [CommonModule, RouterLink, FormsModule, EventHeaderComponent, EventNavbarComponent],
   template: `
     <app-event-header></app-event-header>
     <div class="events-wrapper min-vh-100 py-4 px-2">
+
+      <!-- Event Navbar -->
+      <app-event-navbar></app-event-navbar>
+
       <!-- Title Header -->
       <div class="events-main-header rounded-4 bg-white border d-flex justify-content-between align-items-center p-5 mb-4 mx-3 shadow-sm position-relative overflow-hidden">
         <div class="header-content z-2">
