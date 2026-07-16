@@ -9,6 +9,7 @@ import { EventAuthService } from '../../services/event-auth.service';
 import { Registration } from '../../models/registration.model';
 import { Status } from '../../models/status.enum';
 import { PortalUser } from '../../models/user.model';
+import { EventNavbarComponent } from '../event-bar/event-bar';
 
 /**
  * ParticipantListComponent — displays event registrations.
@@ -29,9 +30,12 @@ import { PortalUser } from '../../models/user.model';
 @Component({
   selector: 'app-participant-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, EventNavbarComponent],
   template: `
     <div class="container-fluid py-2">
+
+      <!-- Event Navbar -->
+      <app-event-navbar></app-event-navbar>
 
       <!-- Header -->
       <div class="card border-0 shadow-sm p-4 mb-4">

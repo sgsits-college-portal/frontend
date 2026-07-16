@@ -11,19 +11,18 @@ import { EventAuthService } from '../../services/event-auth.service';
 import { Event } from '../../models/event.model';
 import { PortalUser } from '../../models/user.model';
 import { Status } from '../../models/status.enum';
+import { EventNavbarComponent } from '../event-bar/event-bar';
 
 @Component({
   selector: 'app-register-participant',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, EventNavbarComponent],
   template: `
     <div class="cyber-workspace container-fluid py-4">
-      <!-- Back Link -->
-      <div class="mb-4">
-        <a routerLink="/events" class="text-decoration-none cyber-back-link small d-inline-flex align-items-center gap-2">
-          <i class="bi bi-arrow-left"></i> <span>Back to Events</span>
-        </a>
-      </div>
+
+      <!-- Event Navbar -->
+      <app-event-navbar></app-event-navbar>
+
 
       <!-- Loading State -->
       <div *ngIf="loading" class="cyber-card p-5 text-center my-4">
@@ -311,7 +310,8 @@ import { Status } from '../../models/status.enum';
     }
 
     .cyber-header-badge {
-      font-size: 0.75rem;
+      font-size: 2rem;
+      font-weight: 600;
       letter-spacing: 1px;
     }
     .bg-purple-glow,

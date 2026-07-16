@@ -6,6 +6,7 @@ import { EventService } from '../../services/event.service';
 import { NotificationService } from '../../services/notification.service';
 import { UserNotificationService } from '../../services/user-notification.service';
 import { EventAuthService } from '../../services/event-auth.service';
+import { EventNavbarComponent } from '../event-bar/event-bar';
 
 /**
  * EventCreateComponent — allows ADMIN or EVENT_MANAGER to create a new event.
@@ -19,7 +20,7 @@ import { EventAuthService } from '../../services/event-auth.service';
 @Component({
   selector: 'app-event-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink,  EventNavbarComponent],
   template: `
     <div class="container-fluid py-2">
       <!-- Back link -->
@@ -28,6 +29,9 @@ import { EventAuthService } from '../../services/event-auth.service';
           <i class="bi bi-arrow-left"></i> Back to Events Directory
         </a>
       </div>
+
+      <!-- Event Navbar -->
+      <app-event-navbar></app-event-navbar>
 
       <!-- Access Denied -->
       <div *ngIf="!canCreate" class="card border-0 shadow-sm p-5 text-center">
