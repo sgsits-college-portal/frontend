@@ -11,6 +11,8 @@ import { EventAuthService } from '../../services/event-auth.service';
 import { Event } from '../../models/event.model';
 import { EventNavbarComponent } from '../event-bar/event-bar';
 
+import { EventHeaderComponent } from '../header/header';
+
 interface EventWithCounts extends Event {
   registeredCount: number;
 }
@@ -18,8 +20,9 @@ interface EventWithCounts extends Event {
 @Component({
   selector: 'app-event-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, EventNavbarComponent],
+  imports: [CommonModule, RouterLink, FormsModule, EventHeaderComponent, EventNavbarComponent],
   template: `
+    <app-event-header></app-event-header>
     <div class="events-wrapper min-vh-100 py-4 px-2">
 
       <!-- Event Navbar -->

@@ -285,7 +285,7 @@
         </div>
 
         <!-- Sub-role Selector -->
-        <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem;" *ngIf="formRole === 'STAFF'">
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 0.35rem;">
           <label style="font-weight: 500; font-size: 0.85rem; color: var(--text-main);">Sub-Role Specialty *</label>
           <select
             name="subRole"
@@ -293,11 +293,7 @@
             required
             class="form-input-control"
             style="padding: 0.5rem 0.75rem;">
-            <option value="" disabled selected>Select specialty...</option>
-            <option value="LIBRARIAN">Librarian (Library manager)</option>
-            <option value="EVENT_MANAGER">Event Manager (Staff)</option>
-            <option value="COMPLAINT_MANAGER">Complaint Manager (Staff)</option>
-            <option value="LEAVE_MANAGER">Leave Manager (Staff)</option>
+            <option *ngFor="let opt of getSubRoleOptions()" [value]="opt.value">{{ opt.label }}</option>
           </select>
         </div>
 

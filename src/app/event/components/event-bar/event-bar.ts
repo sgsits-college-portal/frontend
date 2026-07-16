@@ -10,7 +10,6 @@ import { AuthService } from '../../../services/auth.service';
   imports: [CommonModule, RouterModule],
   template: `
     <div class="event-nav">
-      <button routerLink="/dashboard" routerLinkActive="active-nav">Dashboard</button>
       <button routerLink="/events" routerLinkActive="active-nav" [routerLinkActiveOptions]="{ exact: true }">Events</button>
       @if (user()?.role === 'ADMIN' ||
           (user()?.role === 'STAFF' && user()?.subRole === 'EVENT_MANAGER')) {

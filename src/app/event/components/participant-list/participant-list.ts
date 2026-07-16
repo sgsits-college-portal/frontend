@@ -11,6 +11,8 @@ import { Status } from '../../models/status.enum';
 import { PortalUser } from '../../models/user.model';
 import { EventNavbarComponent } from '../event-bar/event-bar';
 
+import { EventHeaderComponent } from '../header/header';
+
 /**
  * ParticipantListComponent — displays event registrations.
  *
@@ -30,8 +32,9 @@ import { EventNavbarComponent } from '../event-bar/event-bar';
 @Component({
   selector: 'app-participant-list',
   standalone: true,
-  imports: [CommonModule, FormsModule, EventNavbarComponent],
+  imports: [CommonModule, FormsModule, EventHeaderComponent, EventNavbarComponent],
   template: `
+    <app-event-header></app-event-header>
     <div class="container-fluid py-2">
 
       <!-- Event Navbar -->

@@ -13,11 +13,14 @@ import { PortalUser } from '../../models/user.model';
 import { Status } from '../../models/status.enum';
 import { EventNavbarComponent } from '../event-bar/event-bar';
 
+import { EventHeaderComponent } from '../header/header';
+
 @Component({
   selector: 'app-register-participant',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, EventNavbarComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, EventHeaderComponent, EventNavbarComponent],
   template: `
+    <app-event-header></app-event-header>
     <div class="cyber-workspace container-fluid py-4">
 
       <!-- Event Navbar -->

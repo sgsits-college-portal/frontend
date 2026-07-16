@@ -8,6 +8,8 @@ import { UserNotificationService } from '../../services/user-notification.servic
 import { EventAuthService } from '../../services/event-auth.service';
 import { EventNavbarComponent } from '../event-bar/event-bar';
 
+import { EventHeaderComponent } from '../header/header';
+
 /**
  * EventCreateComponent — allows ADMIN or EVENT_MANAGER to create a new event.
  *
@@ -20,15 +22,10 @@ import { EventNavbarComponent } from '../event-bar/event-bar';
 @Component({
   selector: 'app-event-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink,  EventNavbarComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, EventHeaderComponent, EventNavbarComponent],
   template: `
+    <app-event-header></app-event-header>
     <div class="container-fluid py-2">
-      <!-- Back link -->
-      <div class="mb-4">
-        <a routerLink="/events" class="text-decoration-none text-muted small hover-primary d-inline-flex align-items-center gap-1">
-          <i class="bi bi-arrow-left"></i> Back to Events Directory
-        </a>
-      </div>
 
       <!-- Event Navbar -->
       <app-event-navbar></app-event-navbar>
