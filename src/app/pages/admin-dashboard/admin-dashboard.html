@@ -1,92 +1,132 @@
-<div class="min-h-screen flex bg-[#f8f9ff]">
-  
-  <aside class="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col bg-white border-r border-[#c3c6d7]/40 shadow-sm z-50 py-6">
-    <div class="px-6 mb-8">
-      <h1 class="text-xl font-bold text-[#004ac6]">Leaf</h1>
-      <p class="text-[10px] text-[#585f68] uppercase font-bold tracking-widest mt-0.5">Leave Management</p>
+<main class="leave-main">
+
+  <div class="header-back-row">
+
+    <a routerLink="/dashboard" class="back-link">
+      <i class="bi bi-arrow-left"></i>
+      Back to Dashboard
+    </a>
+
+    <h2>Leave Approval Dashboard</h2>
+
+    <p class="page-subtitle">
+      Review and manage leave requests submitted by students and staff.
+    </p>
+
+  </div>
+
+  <div class="form-card">
+
+    <div class="table-header">
+
+      <h3>Pending Leave Requests</h3>
+
     </div>
-    <nav class="flex-1 flex flex-col gap-1 px-2">
-      <a routerLink="/dashboard" class="flex items-center gap-3 px-4 py-3 text-[#585f68] hover:bg-[#eff4ff]/50 hover:text-[#004ac6] transition-all rounded-r-xl cursor-pointer">
-        <span class="material-symbols-outlined text-xl">dashboard</span>
-        <span class="text-sm">Dashboard</span>
-      </a>
-      <a routerLink="/apply-leave" class="flex items-center gap-3 px-4 py-3 text-[#585f68] hover:bg-[#eff4ff]/50 hover:text-[#004ac6] transition-all rounded-r-xl cursor-pointer">
-        <span class="material-symbols-outlined text-xl">calendar_add_on</span>
-        <span class="text-sm">Apply Leave</span>
-      </a>
-      <a routerLink="/leave-history" class="flex items-center gap-3 px-4 py-3 text-[#585f68] hover:bg-[#eff4ff]/50 hover:text-[#004ac6] transition-all rounded-r-xl cursor-pointer">
-        <span class="material-symbols-outlined text-xl">history</span>
-        <span class="text-sm">Leave History</span>
-      </a>
-      <a routerLink="/admin-dashboard" class="flex items-center gap-3 px-4 py-3 border-l-4 border-[#004ac6] bg-[#eff4ff] text-[#004ac6] font-semibold rounded-r-xl cursor-pointer">
-        <span class="material-symbols-outlined text-xl">rule</span>
-        <span class="text-sm">Admin View</span>
-      </a>
-    </nav>
-  </aside>
 
-  <main class="flex-1 md:ml-64 p-6 lg:p-8">
-    <header class="mb-6">
-      <h3 class="text-2xl font-bold text-[#0b1c30]">Leave Approval Queue</h3>
-      <p class="text-xs text-[#585f68] mt-0.5">Review, audit, process, and execute operations across incoming request parameters.</p>
-    </header>
+    <div class="table-responsive" *ngIf="leaves && leaves.length > 0">
 
-    <div class="bg-white rounded-2xl border border-[#c3c6d7]/30 shadow-sm overflow-hidden">
-      <div class="overflow-x-auto" *ngIf="leaves && leaves.length > 0">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-[#eff4ff]/40 border-b border-[#c3c6d7]/30">
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#585f68]">Employee Target</th>
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#585f68]">Classification</th>
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#585f68]">Duration Span</th>
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#585f68]">Reason Statement</th>
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#585f68]">Status</th>
-              <th class="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#585f68] text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[#c3c6d7]/20">
-            <tr *ngFor="let leave of leaves" class="hover:bg-[#f8f9ff] transition-all">
-              <td class="px-6 py-4">
-                <div class="flex items-center gap-2">
-                  <div class="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-[10px] font-bold text-[#585f68]">E</div>
-                  <span class="text-xs font-semibold text-[#0b1c30]">ID: {{ leave.employee?.id }}</span>
-                </div>
-              </td>
-              <td class="px-6 py-4 text-xs font-medium text-[#0b1c30]">{{ leave.leaveType }}</td>
-              <td class="px-6 py-4 text-xs text-[#0b1c30]">
-                <div>{{ leave.startDate }}</div>
-                <div class="text-[#585f68] text-[10px] mt-0.5">to {{ leave.endDate }}</div>
-              </td>
-              <td class="px-6 py-4 text-xs text-[#585f68] max-w-[180px] truncate" [title]="leave.reason">{{ leave.reason || '—' }}</td>
-              <td class="px-6 py-4">
-                <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide"
-                  [ngClass]="{
-                    'bg-amber-100 text-amber-800': leave.status?.toLowerCase() === 'pending',
-                    'bg-green-100 text-green-800': leave.status?.toLowerCase() === 'approved',
-                    'bg-red-100 text-red-800': leave.status?.toLowerCase() === 'rejected'
-                  }">
-                  {{ leave.status }}
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Employee ID</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let leave of leaves">
+
+            <td>#{{leave.employee?.id}}</td>
+
+            <td>{{leave.leaveType}}</td>
+
+            <td>{{leave.startDate}}</td>
+
+            <td>{{leave.endDate}}</td>
+
+            <td>{{leave.reason}}</td>
+
+            <td>
+
+              <span
+                class="status"
+                [ngClass]="{
+                  'pending': leave.status === 'Pending',
+                  'approved': leave.status === 'Approved',
+                  'rejected': leave.status === 'Rejected'
+                }">
+
+                {{leave.status}}
+
+              </span>
+
+            </td>
+
+            <td>
+
+              <div *ngIf="leave.status==='Pending'; else handled">
+
+                <button
+                  class="btn btn-success"
+                  (click)="approve(leave.id)">
+
+                  Approve
+
+                </button>
+
+                <button
+                  class="btn btn-danger"
+                  (click)="reject(leave.id)">
+
+                  Reject
+
+                </button>
+
+              </div>
+
+              <ng-template #handled>
+
+                <span class="handled">
+
+                  Completed
+
                 </span>
-              </td>
-              <td class="px-6 py-4 text-right">
-                <div class="flex justify-end gap-2" *ngIf="leave.status?.toLowerCase() === 'pending'; else processedBlock">
-                  <button (click)="approve(leave.id)" class="px-3 py-1.5 bg-green-600 text-white font-bold text-[10px] uppercase tracking-wider rounded-lg hover:bg-green-700 transition-all shadow-sm">Approve</button>
-                  <button (click)="reject(leave.id)" class="px-3 py-1.5 bg-red-600 text-white font-bold text-[10px] uppercase tracking-wider rounded-lg hover:opacity-90 transition-all shadow-sm">Reject</button>
-                </div>
-                <ng-template #processedBlock>
-                  <span class="text-[11px] text-[#585f68] font-medium italic">Handled</span>
-                </ng-template>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
-      <div class="text-center py-16 px-4 space-y-2" *ngIf="!leaves || leaves.length === 0">
-        <div class="text-3xl">🎉</div>
-        <h5 class="text-sm font-bold text-[#0b1c30]">Queue completely processed</h5>
-        <p class="text-xs text-[#585f68]">No outstanding employee leave operations found inside the datastore.</p>
-      </div>
+              </ng-template>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
     </div>
-  </main>
-</div>
+
+    <div class="empty-state" *ngIf="!leaves || leaves.length===0">
+
+      <i class="bi bi-check-circle"></i>
+
+      <h3>No Pending Requests</h3>
+
+      <p>
+
+        All leave requests have been processed.
+
+      </p>
+
+    </div>
+
+  </div>
+
+</main>
