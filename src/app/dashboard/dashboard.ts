@@ -203,7 +203,7 @@ export class Dashboard {
     const payload: any = {
       username: this.formUsername.trim(),
       role: this.formRole,
-      subRole: (this.formRole !== 'STAFF' || this.formSubRole === 'NONE' || !this.formSubRole) ? this.formRole : this.formSubRole,
+      subRole: (this.formRole !== 'STAFF' || this.formSubRole === 'NONE' || !this.formSubRole) ? 'NONE' : this.formSubRole,
       fullName: this.formFullName.trim(),
       email: this.formEmail.trim() || null
     };
@@ -239,19 +239,6 @@ export class Dashboard {
         },
         error: (err) => {
           this.errorMessage.set(err.error?.message || 'Failed to update user account.');
-        }
-      });
-    }
-  }
-
-  deleteUser(user: any): void {
-    if (confirm(`Are you sure you want to remove the portal account for "${user.fullName}"?`)) {
-      this.authService.deleteUser(user.id).subscribe({
-        next: () => {
-          this.loadUsers();
-        },
-        error: (err) => {
-          alert(err.error?.message || 'Failed to delete user.');
         }
       });
     }

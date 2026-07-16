@@ -166,11 +166,8 @@
                     <span *ngIf="!u.subRole || u.subRole === 'NONE'" class="small text-muted">-</span>
                   </td>
                   <td class="text-end" style="padding-right: 1.5rem;">
-                    <button (click)="openEditUserForm(u)" class="btn btn-icon text-primary" title="Edit User" style="background: none; border: none; cursor: pointer; padding: 0.25rem; margin-right: 0.5rem;">
+                    <button (click)="openEditUserForm(u)" class="btn btn-icon text-primary" title="Edit User" style="background: none; border: none; cursor: pointer; padding: 0.25rem;">
                       <i class="bi bi-pencil-square" style="font-size: 1.1rem;"></i>
-                    </button>
-                    <button (click)="deleteUser(u)" class="btn btn-icon text-danger" title="Delete User" style="background: none; border: none; cursor: pointer; padding: 0.25rem;">
-                      <i class="bi bi-trash3-fill" style="font-size: 1.1rem;"></i>
                     </button>
                   </td>
                 </tr>

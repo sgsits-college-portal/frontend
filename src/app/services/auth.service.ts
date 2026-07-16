@@ -31,7 +31,7 @@ export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly router = inject(Router);
   
-  private readonly baseUrl = 'http://localhost:8080/api/auth';
+  private readonly baseUrl = 'https://gateway-service-sc5r.onrender.com/api/auth';
   
   // Create signals to expose login state reactively
   readonly currentUser = signal<UserSession | null>(this.getStoredUser());
@@ -132,7 +132,7 @@ export class AuthService {
    */
   getUsers(): Observable<any[]> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http.get<any[]>(`http://localhost:8080/api/auth/users`, { headers });
+    return this.http.get<any[]>(`${this.baseUrl}/users`, { headers });
   }
 
   /**
@@ -140,7 +140,7 @@ export class AuthService {
    */
   updateUser(id: number, userData: any): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http.put(`http://localhost:8080/api/auth/users/${id}`, userData, { headers });
+    return this.http.put(`${this.baseUrl}/users/${id}`, userData, { headers });
   }
 
   /**
@@ -148,6 +148,6 @@ export class AuthService {
    */
   deleteUser(id: number): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http.delete(`http://localhost:8080/api/auth/users/${id}`, { headers });
+    return this.http.delete(`${this.baseUrl}/users/${id}`, { headers });
   }
 }
