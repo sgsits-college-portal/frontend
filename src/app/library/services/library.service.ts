@@ -1,0 +1,210 @@
+import { Injectable, signal, computed, inject, effect } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { BookService } from './book.service';
+import { UserService } from './user.service';
+import { IssuedBook } from '../models/models';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LibraryService {
+  private http = inject(HttpClient);
+  private bookService = inject(BookService);
+  private userService = inject(UserService);
+  private readonly baseUrl = 'http://localhost:8080/library';
+
+  // Writable signal for issued books
+  private issuedBooksSignal = signal<IssuedBook[]>([]);
+  issuedBooks = this.issuedBooksSignal.asReadonly();
+
+  // Dynamic computed statistics for Librarian header dashboard
+  totalBooks = computed(() => {
+    return this.bookService.books().reduce((sum, b) => sum + b.quantity, 0);
+  });
+
+  availableBooks = computed(() => {
+    return this.bookService.books().reduce((sum, b) => sum + b.availableCopies, 0);
+  });
+
+  issuedBooksCount = computed(() => {
+    return this.bookService.books().reduce((sum, b) => sum + (b.quantity - b.availableCopies), 0);
+  });
+
+  constructor() {
+    // Automatically load data when user logs in/out
+    effect(() => {
+      const user = this.userService.currentUser();
+      if (user) {
+        this.refreshIssuedBooks();
+      } else {
+        this.issuedBooksSignal.set([]);
+      }
+    }, { allowSignalWrites: true });
+  }
+
+  /**
+   * Refresh the list of issued books.
+   * If a student is logged in, fetches from student dashboard.
+   * If a librarian is logged in, fetches all issues.
+   */
+  refreshIssuedBooks(): void {
+    const user = this.userService.currentUser();
+    if (!user) return;
+
+    if (user.role === 'Librarian') {
+      this.refreshLibrarianIssues();
+    } else {
+      this.refreshStudentDashboard();
+    }
+  }
+
+  /**
+   * Fetch active issues and fines for student from the backend dashboard API.
+   */
+  private refreshStudentDashboard(): void {
+    const user = this.userService.currentUser();
+    if (!user) return;
+
+    const headers = new HttpHeaders()
+      .set('X-User-Role', user.role.toUpperCase())
+      .set('X-User-Id', user.id);
+
+    this.http.get<any>(`${this.baseUrl}/student/dashboard`, { headers }).pipe(
+      map(dto => {
+        if (!dto || !dto.issuedBooks) return [];
+        return dto.issuedBooks.map((detail: any) => ({
+          id: `issue-student-${detail.bookId}`,
+          userId: user.id,
+          bookId: `${detail.bookId}`,
+          issueDate: detail.issueDate,
+          dueDate: detail.dueDate,
+          returnDate: undefined,
+          finePaid: detail.fine === 0,
+          fineAmount: detail.fine
+        }));
+      }),
+      catchError(err => {
+        console.error('Failed to load student dashboard from backend', err);
+        return of([]);
+      })
+    ).subscribe(mappedIssues => {
+      this.issuedBooksSignal.set(mappedIssues);
+    });
+  }
+
+  /**
+   * Fetch all global issues from the backend (for Librarian view).
+   */
+  private refreshLibrarianIssues(): void {
+    const headers = new HttpHeaders().set('X-User-Role', 'LIBRARIAN');
+
+    this.http.get<any[]>(`${this.baseUrl}/librarian/issues`, { headers }).pipe(
+      map(issues => issues.map(issue => ({
+        id: `issue-${issue.id}`,
+        userId: `${issue.studentId}`,
+        bookId: `${issue.bookId}`,
+        issueDate: issue.issueDate,
+        dueDate: issue.dueDate,
+        returnDate: issue.returnDate || undefined,
+        finePaid: issue.returnDate ? true : false,
+        fineAmount: 0
+      }))),
+      catchError(err => {
+        console.warn('Failed to load global issued books from backend /api/librarian/issues.', err);
+        return of([]);
+      })
+    ).subscribe(mappedIssues => {
+      this.issuedBooksSignal.set(mappedIssues);
+    });
+  }
+
+  /**
+   * Calculate fine based on rules.
+   */
+  calculateFine(issueDateStr: string, returnDateStr?: string): number {
+    const issueDate = new Date(issueDateStr);
+    const endDate = returnDateStr ? new Date(returnDateStr) : new Date();
+    issueDate.setHours(0, 0, 0, 0);
+    endDate.setHours(0, 0, 0, 0);
+
+    const diffTime = endDate.getTime() - issueDate.getTime();
+    if (diffTime < 0) return 0;
+
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    // 1 rupee per day after due date (30 days from issue)
+    const overdueDays = diffDays - 30;
+    return overdueDays > 0 ? overdueDays * 1.0 : 0;
+  }
+
+  /**
+   * Get active issued books.
+   */
+  getActiveIssuedBooks() {
+    return computed(() => {
+      return this.issuedBooks().filter(ib => !ib.returnDate);
+    });
+  }
+
+  /**
+   * Get currently issued books for a specific user.
+   */
+  getIssuedBooksForUser(userId: string) {
+    return computed(() => {
+      return this.issuedBooks().filter(ib => ib.userId === userId && !ib.returnDate);
+    });
+  }
+
+  /**
+   * Issue a book to a user via the backend REST API.
+   */
+  issueBook(userId: string, bookId: string, issueDateStr: string): Observable<boolean> {
+    const headers = new HttpHeaders().set('X-User-Role', 'LIBRARIAN');
+
+    const params = new HttpParams()
+      .set('studentId', userId)
+      .set('bookId', bookId);
+
+    return this.http.post<any>(`${this.baseUrl}/librarian/issues`, null, { headers, params }).pipe(
+      map(res => {
+        if (res && res.id) {
+          this.refreshIssuedBooks();
+          this.bookService.refreshBooks();
+          return true;
+        }
+        return false;
+      }),
+      catchError(err => {
+        console.error('Failed to issue book', err);
+        return of(false);
+      })
+    );
+  }
+
+  /**
+   * Return an issued book and record fine collection if applicable.
+   */
+  returnBook(record: IssuedBook, collectFine: boolean): Observable<boolean> {
+    const headers = new HttpHeaders().set('X-User-Role', 'LIBRARIAN');
+
+    const params = new HttpParams()
+      .set('studentId', record.userId)
+      .set('bookId', record.bookId);
+
+    return this.http.post<any>(`${this.baseUrl}/librarian/returns`, null, { headers, params }).pipe(
+      map(res => {
+        if (res && res.bookId) {
+          this.refreshIssuedBooks();
+          this.bookService.refreshBooks();
+          return true;
+        }
+        return false;
+      }),
+      catchError(err => {
+        console.error('Failed to return book', err);
+        return of(false);
+      })
+    );
+  }
+}
