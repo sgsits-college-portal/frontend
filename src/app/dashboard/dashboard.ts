@@ -101,14 +101,14 @@ export class Dashboard {
       url: '/leave'
     });
 
-    // 5. Complaint Service (Common for all roles, Active for Complaint managers, Admin, and show for others)
+    // 5. Complaint Service (Common for all roles, Active for all authenticated users)
     list.push({
       id: 4,
       title: 'Complaint Service',
       description: 'Submit campus complaints, infrastructure feedback, and track resolution status.',
       iconClass: 'bi-exclamation-triangle-fill',
-      badge: r === 'ADMIN' || (r === 'STAFF' && sr === 'COMPLAINT_MANAGER') ? 'Active' : 'Coming Soon',
-      url: '/complaint'
+      badge: 'Active',
+      url: '/complaints/feed'
     });
 
     return list;
@@ -128,6 +128,29 @@ export class Dashboard {
     );
   });
 
+  getDashboardRoute(role: string, subRole: string): string {
+    const r = role.toUpperCase();
+    const sr = subRole ? subRole.toUpperCase() : '';
+
+    if (r === 'ADMIN' || sr === 'SUPER_ADMIN' || sr === 'SYSTEM_ADMIN') {
+      return '/admin/complaints';
+    }
+
+    switch (r) {
+      case 'STUDENT':
+        return '/complaints/my';
+      case 'STAFF':
+        if (sr === 'TECHNICIAN') return '/technician/complaints';
+        return '/complaints/my';
+      case 'HOD':
+      case 'FACULTY':
+        if (r === 'HOD' || sr === 'HOD' || sr === 'HEAD_OF_DEPT') return '/hod/approvals';
+        return '/complaints/my';
+      default:
+        return '/complaints/feed';
+    }
+  }
+
   openService(service: ServiceItem): void {
     if (service.id === 5) {
       // Toggle User Management view instead of routing
@@ -136,11 +159,18 @@ export class Dashboard {
     else if (service.id === 1 && service.badge === 'Active') {
       this.router.navigate(['/library']);
     }
-    // event, leave, complaint routes are mock for now
     else if (service.id === 2 && service.badge === 'Active') {
-        this.router.navigate(['/events']);
-        return;
+      this.router.navigate(['/events']);
+      return;
     }
+    else if (service.id === 4 && service.badge === 'Active') {
+      const currentUser = this.user();
+      if (currentUser) {
+        const route = this.getDashboardRoute(currentUser.role, currentUser.subRole || '');
+        this.router.navigate([route]);
+      }
+    }
+    // leave routes are mock for now
   }
 
   toggleUserManagement(show: boolean): void {
@@ -194,10 +224,45 @@ export class Dashboard {
   }
 
   onRoleChange(): void {
-    if (this.formRole !== 'STAFF') {
-      this.formSubRole = 'NONE';
-    } else {
-      this.formSubRole = '';
+    this.formSubRole = 'NONE';
+  }
+
+  getSubRoleOptions(): { value: string; label: string }[] {
+    const role = this.formRole ? this.formRole.toUpperCase() : '';
+    switch (role) {
+      case 'STUDENT':
+        return [
+          { value: 'NONE', label: 'None' },
+          { value: 'CR', label: 'Class Representative (CR)' }
+        ];
+      case 'FACULTY':
+        return [
+          { value: 'NONE', label: 'None' },
+          { value: 'PROFESSOR', label: 'Professor' },
+          { value: 'HEAD_OF_DEPT', label: 'Head of Department (HOD)' }
+        ];
+      case 'HEAD':
+      case 'HOD':
+        return [
+          { value: 'NONE', label: 'None' },
+          { value: 'HEAD_OF_DEPT', label: 'Head of Department (HOD)' }
+        ];
+      case 'STAFF':
+        return [
+          { value: 'NONE', label: 'None' },
+          { value: 'LAB_INCHARGE', label: 'Lab In-Charge' },
+          { value: 'LIBRARIAN', label: 'Librarian' },
+          { value: 'TECHNICIAN', label: 'Technician' },
+          { value: 'OFFICE_ADMIN', label: 'Office Admin' }
+        ];
+      case 'ADMIN':
+        return [
+          { value: 'NONE', label: 'None' },
+          { value: 'SYSTEM_ADMIN', label: 'System Admin' },
+          { value: 'SUPER_ADMIN', label: 'Super Admin' }
+        ];
+      default:
+        return [{ value: 'NONE', label: 'None' }];
     }
   }
 
@@ -208,7 +273,7 @@ export class Dashboard {
     const payload: any = {
       username: this.formUsername.trim(),
       role: this.formRole,
-      subRole: (this.formRole !== 'STAFF' || this.formSubRole === 'NONE' || !this.formSubRole) ? 'NONE' : this.formSubRole,
+      subRole: this.formSubRole || 'NONE',
       fullName: this.formFullName.trim(),
       email: this.formEmail.trim() || null
     };
