@@ -1,0 +1,84 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.apply-leave-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+/* Card layout wrapper constraint */
+.form-card {
+    max-width: 650px;
+    border-radius: 16px;
+    background-color: #ffffff;
+}
+
+/* Form layout micro transitions */
+.form-label {
+    margin-bottom: 0.4rem;
+}
+
+.form-control, .form-select {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    padding: 0.65rem 0.9rem;
+    color: #334155;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #10b981; /* Success Green tint highlight ring */
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+    outline: 0;
+}
+
+/* Action items styling overrides */
+.btn-success {
+    background-color: #10b981;
+    border: none;
+    border-radius: 10px;
+    padding: 0.7rem 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-success:hover:not(:disabled) {
+    background-color: #059669;
+    transform: translateY(-1px);
+}
+
+.btn-success:disabled {
+    background-color: #a7f3d0;
+    color: #065f46;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn-outline-secondary {
+    border: 1.5px solid #cbd5e1;
+    color: #64748b;
+    border-radius: 10px;
+    padding: 0.7rem 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #f1f5f9;
+    color: #334155;
+    border-color: #94a3b8;
+}
+
+/* Fade animation definitions */
+.animate-fade-in {
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}

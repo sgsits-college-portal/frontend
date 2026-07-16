@@ -76,7 +76,7 @@ import { EventHeaderComponent } from '../header/header';
               type="text"
               id="participant-search"
               class="form-control ps-5 rounded-3 py-2 border-light-subtle"
-              placeholder="Search by participant ID or event name..."
+              placeholder="Search by event name, participant name, email or booking ID..."
               [(ngModel)]="searchQuery"
               (input)="filterRegistrations()"
             />
@@ -388,8 +388,12 @@ export class ParticipantListComponent implements OnInit {
   loadRegistrations() {
     this.loading = true;
     forkJoin({
-      registrations: this.registrationService.getAll().pipe(catchError(() => of([]))),
-      users: this.eventAuth.getAllUsers()
+      registrations: this.registrationService.getAll().pipe(
+        catchError(() => of([]))
+      ),
+      users: this.isAdminView
+        ? this.eventAuth.getAllUsers().pipe(catchError(() => of([])))
+        : of([])
     }).subscribe({
       next: ({ registrations, users }) => {
         (users || []).forEach(u => this.usersMap.set(u.id, u));
@@ -424,8 +428,9 @@ export class ParticipantListComponent implements OnInit {
 
     if (query) {
       result = result.filter(r =>
-        String(r.participantUserId ?? '').includes(query) ||
         r.event.eventName.toLowerCase().includes(query) ||
+        this.getParticipantName(r).toLowerCase().includes(query) ||
+        this.getParticipantEmail(r).toLowerCase().includes(query) ||
         String(r.registrationId ?? '').includes(query)
       );
     }
@@ -448,13 +453,24 @@ export class ParticipantListComponent implements OnInit {
    */
   getParticipantInitial(userId?: number): string {
     if (!userId) return '?';
-    if (this.usersMap.has(userId)) {
-      const name = this.usersMap.get(userId)!.fullName;
-      const parts = name.split(' ');
-      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-      return name.slice(0, 2).toUpperCase();
+
+    let name = '';
+
+    if (userId === this.currentUserId) {
+      name = this.eventAuth.getCurrentUser()?.fullName || '';
+    } else if (this.usersMap.has(userId)) {
+      name = this.usersMap.get(userId)!.fullName;
     }
-    return `U${userId}`.slice(0, 3);
+
+    if (name) {
+      const parts = name.trim().split(' ');
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return name.substring(0, 2).toUpperCase();
+    }
+
+    return `U${userId}`;
   }
 
   // ─── Delete Modal ────────────────────────────────────────────────────────────
@@ -509,17 +525,31 @@ export class ParticipantListComponent implements OnInit {
   }
 
   getParticipantName(reg: Registration): string {
+    if (reg.participantUserId === this.currentUserId) {
+      return this.eventAuth.getCurrentUser()?.fullName || 'You';
+    }
+
     if (reg.participantUserId && this.usersMap.has(reg.participantUserId)) {
       return this.usersMap.get(reg.participantUserId)!.fullName;
     }
+
     return `User #${reg.participantUserId || 'N/A'}`;
   }
 
   getParticipantEmail(reg: Registration): string {
+    // If this registration belongs to the currently logged-in user
+    if (reg.participantUserId === this.currentUserId) {
+      return this.eventAuth.getCurrentUser()?.email ||
+             `Participant ID: ${reg.participantUserId}`;
+    }
+
+    // If admin/HOD/event manager fetched the user list
     if (reg.participantUserId && this.usersMap.has(reg.participantUserId)) {
       const email = this.usersMap.get(reg.participantUserId)!.email;
       return email || `Participant ID: ${reg.participantUserId}`;
     }
+
+    // Fallback
     return `Participant ID: ${reg.participantUserId || 'N/A'}`;
   }
 }

@@ -386,6 +386,7 @@ export class EventListComponent implements OnInit {
     const id = event.eventId || 1;
     const category = this.getEventCategory(event).toLowerCase();
     return `https://loremflickr.com/800/600/${category}?lock=${id}`;
+    //     return `https://picsum.photos/seed/${category}${id}/800/600`;
   }
 
   onDelete(eventId: number) {

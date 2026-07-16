@@ -19,10 +19,10 @@ export const GATEWAY_BASE_URL = 'https://gateway-service-sc5r.onrender.com';
 
 /** Auth service endpoints (via gateway) */
 export const AUTH_API = {
-  LOGIN:    `${GATEWAY_BASE_URL}/auth/login`,
-  REGISTER: `${GATEWAY_BASE_URL}/auth/register`,
-  VALIDATE: `${GATEWAY_BASE_URL}/auth/validate`,
-  GET_USERS: `${GATEWAY_BASE_URL}/auth/users`
+  LOGIN:    `${GATEWAY_BASE_URL}/api/auth/login`,
+  REGISTER: `${GATEWAY_BASE_URL}/api/auth/register`,
+  VALIDATE: `${GATEWAY_BASE_URL}/api/auth/validate`,
+  GET_USERS: `${GATEWAY_BASE_URL}/api/auth/users`
 } as const;
 
 /** Event service — events endpoint (via+ gateway) */
