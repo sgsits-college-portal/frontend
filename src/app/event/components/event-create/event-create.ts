@@ -6,7 +6,6 @@ import { EventService } from '../../services/event.service';
 import { NotificationService } from '../../services/notification.service';
 import { UserNotificationService } from '../../services/user-notification.service';
 import { EventAuthService } from '../../services/event-auth.service';
-import { EventNavbarComponent } from '../event-bar/event-bar';
 
 import { EventHeaderComponent } from '../header/header';
 
@@ -22,13 +21,11 @@ import { EventHeaderComponent } from '../header/header';
 @Component({
   selector: 'app-event-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, EventHeaderComponent, EventNavbarComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, EventHeaderComponent],
   template: `
     <app-event-header></app-event-header>
     <div class="container-fluid py-2">
 
-      <!-- Event Navbar -->
-      <app-event-navbar></app-event-navbar>
 
       <!-- Access Denied -->
       <div *ngIf="!canCreate" class="card border-0 shadow-sm p-5 text-center">
