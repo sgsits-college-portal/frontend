@@ -13,7 +13,7 @@ export class LibraryService {
   private http = inject(HttpClient);
   private bookService = inject(BookService);
   private userService = inject(UserService);
-  private readonly baseUrl = 'http://localhost:8080/library';
+  private readonly baseUrl = 'https://gateway-service-sc5r.onrender.com/library';
 
   // Writable signal for issued books
   private issuedBooksSignal = signal<IssuedBook[]>([]);

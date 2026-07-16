@@ -208,7 +208,7 @@ export class Dashboard {
     const payload: any = {
       username: this.formUsername.trim(),
       role: this.formRole,
-      subRole: (this.formRole !== 'STAFF' || this.formSubRole === 'NONE' || !this.formSubRole) ? this.formRole : this.formSubRole,
+      subRole: (this.formRole !== 'STAFF' || this.formSubRole === 'NONE' || !this.formSubRole) ? 'NONE' : this.formSubRole,
       fullName: this.formFullName.trim(),
       email: this.formEmail.trim() || null
     };
@@ -263,7 +263,6 @@ export class Dashboard {
 
 
   }
-
   logout(): void {
     this.authService.logout();
   }

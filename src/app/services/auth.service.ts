@@ -132,7 +132,7 @@ export class AuthService {
    */
   getUsers(): Observable<any[]> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http.get<any[]>(`${this.baseUrl}/auth/users`, { headers });
+    return this.http.get<any[]>(`${this.baseUrl}/users`, { headers });
   }
 
   /**
@@ -140,7 +140,7 @@ export class AuthService {
    */
   updateUser(id: number, userData: any): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http.put(`${this.baseUrl}/auth/users/${id}`, userData, { headers });
+    return this.http.put(`${this.baseUrl}/users/${id}`, userData, { headers });
   }
 
   /**
@@ -148,6 +148,6 @@ export class AuthService {
    */
   deleteUser(id: number): Observable<any> {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.getToken()}`);
-    return this.http.delete(`${this.baseUrl}/auth/users/${id}`, { headers });
+    return this.http.delete(`${this.baseUrl}/users/${id}`, { headers });
   }
 }

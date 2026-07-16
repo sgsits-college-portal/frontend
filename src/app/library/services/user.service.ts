@@ -10,7 +10,7 @@ import { User } from '../models/models';
 export class UserService {
   private readonly USER_STORAGE_KEY = 'lms_current_user';
   private http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8080/library';
+  private readonly baseUrl = 'https://gateway-service-sc5r.onrender.com/library';
 
   private usersSignal = signal<User[]>([]);
   users = this.usersSignal.asReadonly();
