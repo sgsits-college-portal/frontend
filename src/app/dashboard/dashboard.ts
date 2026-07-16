@@ -42,7 +42,7 @@ export class Dashboard {
   // Form Fields
   formUsername = '';
   formPassword = '';
-  formRole = 'STUDENT';
+  readonly formRole = signal<string>('STUDENT');
   formSubRole = 'NONE';
   formFullName = '';
   formEmail = '';
@@ -199,7 +199,7 @@ export class Dashboard {
     this.successMessage.set('');
     this.formUsername = '';
     this.formPassword = '';
-    this.formRole = 'STUDENT';
+    this.formRole.set('STUDENT');
     this.formSubRole = 'NONE';
     this.formFullName = '';
     this.formEmail = '';
@@ -212,7 +212,7 @@ export class Dashboard {
     this.successMessage.set('');
     this.formUsername = user.username;
     this.formPassword = ''; // Keep empty to indicate unchanged password
-    this.formRole = user.role;
+    this.formRole.set(user.role);
     this.formSubRole = user.subRole || 'NONE';
     this.formFullName = user.fullName;
     this.formEmail = user.email || '';
@@ -223,12 +223,13 @@ export class Dashboard {
     this.isFormOpen.set(false);
   }
 
-  onRoleChange(): void {
+  onRoleChange(newRole: string): void {
+    this.formRole.set(newRole);
     this.formSubRole = 'NONE';
   }
 
-  getSubRoleOptions(): { value: string; label: string }[] {
-    const role = this.formRole ? this.formRole.toUpperCase() : '';
+  readonly subRoleOptions = computed(() => {
+    const role = this.formRole() ? this.formRole().toUpperCase() : '';
     switch (role) {
       case 'STUDENT':
         return [
@@ -264,7 +265,7 @@ export class Dashboard {
       default:
         return [{ value: 'NONE', label: 'None' }];
     }
-  }
+  });
 
   submitUserForm(): void {
     this.errorMessage.set('');
@@ -272,7 +273,7 @@ export class Dashboard {
 
     const payload: any = {
       username: this.formUsername.trim(),
-      role: this.formRole,
+      role: this.formRole(),
       subRole: this.formSubRole || 'NONE',
       fullName: this.formFullName.trim(),
       email: this.formEmail.trim() || null

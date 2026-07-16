@@ -84,7 +84,8 @@
             </span>
             <input
               type="text"
-              [(ngModel)]="searchQuery"
+              [ngModel]="searchQuery()"
+              (ngModelChange)="searchQuery.set($event)"
               name="searchQuery"
               class="form-input-control"
               placeholder="Search by name, key, or role..."
@@ -271,8 +272,8 @@
           <label style="font-weight: 500; font-size: 0.85rem; color: var(--text-main);">Academic Role *</label>
           <select
             name="role"
-            [(ngModel)]="formRole"
-            (change)="onRoleChange()"
+            [ngModel]="formRole()"
+            (ngModelChange)="onRoleChange($event)"
             required
             class="form-input-control"
             style="padding: 0.5rem 0.75rem;">
@@ -293,7 +294,7 @@
             required
             class="form-input-control"
             style="padding: 0.5rem 0.75rem;">
-            <option *ngFor="let opt of getSubRoleOptions()" [value]="opt.value">{{ opt.label }}</option>
+            <option *ngFor="let opt of subRoleOptions()" [value]="opt.value">{{ opt.label }}</option>
           </select>
         </div>
 
