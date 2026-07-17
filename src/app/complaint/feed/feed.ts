@@ -137,4 +137,14 @@ export class Feed implements OnInit {
       default: return 'bg-light text-dark';
     }
   }
+
+  onUpvote(complaint: Complaint, event: Event): void {
+    event.stopPropagation();
+    this.complaintService.upvoteComplaint(complaint.id).subscribe({
+      next: (updated) => {
+        this.complaints.update(list => list.map(c => c.id === updated.id ? updated : c));
+      },
+      error: (err) => console.error('Failed to upvote', err)
+    });
+  }
 }

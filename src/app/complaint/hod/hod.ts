@@ -72,24 +72,46 @@ export class Hod implements OnInit {
     this.showResolveModal.set(true);
   }
 
-  onResolveSubmit(): void {
+  onApproveSubmit(): void {
     const item = this.activeComplaintForResolve;
     const HOD = this.user();
     if (!item || !HOD || !this.hodNoteInput || this.hodNoteInput.trim().length < 10) return;
 
     this.isActionSubmitting.set(true);
-    this.complaintService.resolveComplaint(item.id, HOD.username, this.hodNoteInput.trim()).subscribe({
-      next: (updated) => {
+    this.complaintService.approveComplaint(item.id, HOD.username, this.hodNoteInput.trim()).subscribe({
+      next: (updated: Complaint) => {
         this.isActionSubmitting.set(false);
         this.showResolveModal.set(false);
         this.activeComplaintForResolve = null;
         // Remove from pending list
         this.complaints.update(list => list.filter(c => c.id !== updated.id));
       },
-      error: (err) => {
+      error: (err: any) => {
         this.isActionSubmitting.set(false);
-        console.error('Error resolving complaint:', err);
-        alert(err.error?.message || 'Failed to sign-off and resolve complaint.');
+        console.error('Error approving complaint:', err);
+        alert(err.error?.message || 'Failed to approve complaint.');
+      }
+    });
+  }
+
+  onRejectSubmit(): void {
+    const item = this.activeComplaintForResolve;
+    const HOD = this.user();
+    if (!item || !HOD || !this.hodNoteInput || this.hodNoteInput.trim().length < 10) return;
+
+    this.isActionSubmitting.set(true);
+    this.complaintService.rejectComplaint(item.id, HOD.username, this.hodNoteInput.trim()).subscribe({
+      next: (updated: Complaint) => {
+        this.isActionSubmitting.set(false);
+        this.showResolveModal.set(false);
+        this.activeComplaintForResolve = null;
+        // Remove from pending list
+        this.complaints.update(list => list.filter(c => c.id !== updated.id));
+      },
+      error: (err: any) => {
+        this.isActionSubmitting.set(false);
+        console.error('Error rejecting complaint:', err);
+        alert(err.error?.message || 'Failed to reject complaint.');
       }
     });
   }

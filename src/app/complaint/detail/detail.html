@@ -161,7 +161,9 @@
             <div class="stat-info-row">
               <span class="stat-label">Upvotes:</span>
               <span class="stat-value upvote-count">
-                <i class="bi bi-hand-thumbs-up-fill"></i> <strong>{{ item.upvoteCount }}</strong>
+                <button class="btn btn-sm btn-outline-primary" (click)="onUpvote()" [disabled]="isActionSubmitting()" style="border: none; background: none; color: inherit; padding: 0; cursor: pointer;" [class.text-primary]="item.upvoteCount > 0">
+                  <i class="bi bi-hand-thumbs-up-fill"></i> <strong>{{ item.upvoteCount }}</strong>
+                </button>
               </span>
             </div>
             <div class="stat-info-row">
@@ -239,43 +241,60 @@
           </ng-container>
 
           <!-- 2. TECHNICIAN ACTION PANEL -->
-          <ng-container *ngIf="currentUser.role === 'STAFF' && currentUser.subRole === 'TECHNICIAN' && item.adminId === currentUser.username">
+          <ng-container *ngIf="isAssignedTechnician">
             <h3>Technician Action Panel</h3>
             
             <div *ngIf="item.status === 'IN_PROGRESS'; else techStatusHint">
-              <label for="adminNote">Report work details for verification <span class="required">*</span></label>
-              <textarea 
-                id="adminNote" 
-                [(ngModel)]="adminNoteInput" 
-                rows="3" 
-                placeholder="Detail what steps were taken to resolve this problem (e.g. replaced fuses, patched network cables)..." 
-                class="form-control-textarea mt-1"></textarea>
-              <small class="form-hint mt-1 d-block">Minimum 10 characters.</small>
-              
-              <button 
-                (click)="onSubmitVerification()" 
-                [disabled]="isActionSubmitting() || !adminNoteInput || adminNoteInput.trim().length < 10" 
-                class="action-btn success-btn mt-3">
-                <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Submit for Verification
-              </button>
+              <!-- If HOD Note exists, it was approved by HOD and sent back to fix -->
+              <div *ngIf="item.hodNote">
+                <div class="alert alert-info" style="margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: rgba(var(--bs-info-rgb), 0.1); border: 1px solid rgba(var(--bs-info-rgb), 0.2);">
+                  <strong>HOD Approval Note:</strong> {{ item.hodNote }}
+                </div>
+                <p>The HOD has approved your initial assessment. You may now perform the final fix and close the complaint.</p>
+                <button 
+                  (click)="onCloseComplaint()" 
+                  [disabled]="isActionSubmitting()" 
+                  class="action-btn primary-btn mt-2">
+                  <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Close Complaint (Resolved)
+                </button>
+              </div>
+
+              <!-- Initial state: Forward to HOD -->
+              <div *ngIf="!item.hodNote">
+                <label for="adminNote">Report work details for verification <span class="required">*</span></label>
+                <textarea 
+                  id="adminNote" 
+                  [(ngModel)]="adminNoteInput" 
+                  rows="3" 
+                  placeholder="Detail what steps were taken to resolve this problem..." 
+                  class="form-control-textarea mt-1"></textarea>
+                <small class="form-hint mt-1 d-block">Minimum 10 characters.</small>
+                
+                <button 
+                  (click)="onSubmitVerification()" 
+                  [disabled]="isActionSubmitting() || !adminNoteInput || adminNoteInput.trim().length < 10" 
+                  class="action-btn success-btn mt-3">
+                  <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Forward to HOD
+                </button>
+              </div>
             </div>
             
             <ng-template #techStatusHint>
-              <div class="status-hint">
+              <div class="status-hint" *ngIf="item.status !== 'RESOLVED' && item.status !== 'REJECTED'">
                 <i class="bi bi-info-circle-fill"></i>
-                <span>This task is in status <strong>{{ item.status }}</strong>. You can only submit updates when status is IN_PROGRESS.</span>
+                <span>This task is currently <strong>{{ item.status }}</strong>. Waiting for HOD verification.</span>
               </div>
             </ng-template>
           </ng-container>
 
           <!-- 3. HOD RESOLVE ACTION PANEL -->
-          <ng-container *ngIf="currentUser.role === 'HOD' || currentUser.subRole === 'HEAD_OF_DEPT'">
+          <ng-container *ngIf="isHOD">
             <h3>HOD Resolution Panel</h3>
             
             <div *ngIf="item.status === 'VERIFICATION_PENDING'; else hodStatusHint">
-              <div class="tech-submission-box">
+              <div class="tech-submission-box" style="margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-left: 4px solid var(--primary-color);">
                 <strong>Technician Resolution Worknote:</strong>
-                <p>"{{ item.adminNote || 'No work note provided.' }}"</p>
+                <p style="margin: 0.5rem 0 0 0;">"{{ item.adminNote || 'No work note provided.' }}"</p>
               </div>
 
               <label for="hodNote" class="mt-3">Verification and sign-off comment <span class="required">*</span></label>
@@ -283,22 +302,30 @@
                 id="hodNote" 
                 [(ngModel)]="hodNoteInput" 
                 rows="3" 
-                placeholder="Add signature verification details (e.g. checked and working properly)..." 
+                placeholder="Add verification details (e.g. checked and approved)..." 
                 class="form-control-textarea mt-1"></textarea>
               <small class="form-hint mt-1 d-block">Minimum 10 characters.</small>
 
-              <button 
-                (click)="onResolveComplaint()" 
-                [disabled]="isActionSubmitting() || !hodNoteInput || hodNoteInput.trim().length < 10" 
-                class="action-btn success-btn mt-3">
-                <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Resolve Complaint
-              </button>
+              <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button 
+                  (click)="onApproveComplaint()" 
+                  [disabled]="isActionSubmitting() || !hodNoteInput || hodNoteInput.trim().length < 10" 
+                  class="action-btn success-btn" style="flex: 1;">
+                  <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Approve
+                </button>
+                <button 
+                  (click)="onRejectComplaint()" 
+                  [disabled]="isActionSubmitting() || !hodNoteInput || hodNoteInput.trim().length < 10" 
+                  class="action-btn warning-btn" style="flex: 1; background-color: var(--alert-danger); border-color: var(--alert-danger); color: white;">
+                  <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Reject
+                </button>
+              </div>
             </div>
 
             <ng-template #hodStatusHint>
               <div class="status-hint">
                 <i class="bi bi-info-circle-fill"></i>
-                <span>This ticket is in status <strong>{{ item.status }}</strong>. Sign-off and final resolution is only required when verification is pending.</span>
+                <span>This ticket is in status <strong>{{ item.status }}</strong>. Verification is only available when pending.</span>
               </div>
             </ng-template>
           </ng-container>

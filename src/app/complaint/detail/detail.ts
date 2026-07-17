@@ -42,6 +42,20 @@ export class Detail implements OnInit {
   adminNoteInput = '';
   hodNoteInput = '';
 
+  get isAssignedTechnician(): boolean {
+    const c = this.complaint();
+    const u = this.user();
+    return !!(c && u && u.role === 'STAFF' && u.subRole === 'TECHNICIAN' && c.adminId === u.username);
+  }
+
+  get isHOD(): boolean {
+    const u = this.user();
+    if (!u) return false;
+    const r = u.role ? u.role.toUpperCase() : '';
+    const sr = u.subRole ? u.subRole.toUpperCase() : '';
+    return r === 'HOD' || r === 'HEAD' || sr === 'HEAD_OF_DEPT' || sr === 'HEAD' || sr === 'HOD';
+  }
+
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
@@ -188,8 +202,8 @@ export class Detail implements OnInit {
     });
   }
 
-  // Action: HOD Resolves Complaint
-  onResolveComplaint(): void {
+  // Action: HOD Approves Complaint
+  onApproveComplaint(): void {
     const id = this.complaintId();
     const HOD = this.user();
     if (!id || !HOD || !this.hodNoteInput || this.hodNoteInput.trim().length < 10) {
@@ -200,18 +214,66 @@ export class Detail implements OnInit {
     this.isActionSubmitting.set(true);
     this.actionErrorMessage.set(null);
 
-    this.complaintService.resolveComplaint(id, HOD.username, this.hodNoteInput.trim()).subscribe({
+    this.complaintService.approveComplaint(id, HOD.username, this.hodNoteInput.trim()).subscribe({
       next: (updatedComplaint) => {
         this.isActionSubmitting.set(false);
         this.complaint.set(updatedComplaint);
         this.hodNoteInput = '';
-        this.successMessage.set('Complaint resolved successfully!');
+        this.successMessage.set('Complaint approved and sent back to Technician!');
         setTimeout(() => this.successMessage.set(null), 3000);
       },
       error: (err) => {
         this.isActionSubmitting.set(false);
-        console.error('Error resolving complaint:', err);
-        this.actionErrorMessage.set(err.error?.message || 'Failed to sign-off and resolve.');
+        this.actionErrorMessage.set(err.error?.message || 'Failed to approve complaint.');
+      }
+    });
+  }
+
+  // Action: HOD Rejects Complaint
+  onRejectComplaint(): void {
+    const id = this.complaintId();
+    const HOD = this.user();
+    if (!id || !HOD || !this.hodNoteInput || this.hodNoteInput.trim().length < 10) {
+      this.actionErrorMessage.set('Verification note must be at least 10 characters long.');
+      return;
+    }
+
+    this.isActionSubmitting.set(true);
+    this.actionErrorMessage.set(null);
+
+    this.complaintService.rejectComplaint(id, HOD.username, this.hodNoteInput.trim()).subscribe({
+      next: (updatedComplaint) => {
+        this.isActionSubmitting.set(false);
+        this.complaint.set(updatedComplaint);
+        this.hodNoteInput = '';
+        this.successMessage.set('Complaint rejected successfully.');
+        setTimeout(() => this.successMessage.set(null), 3000);
+      },
+      error: (err) => {
+        this.isActionSubmitting.set(false);
+        this.actionErrorMessage.set(err.error?.message || 'Failed to reject complaint.');
+      }
+    });
+  }
+
+  // Action: Technician Closes Complaint
+  onCloseComplaint(): void {
+    const id = this.complaintId();
+    if (!id) return;
+
+    this.isActionSubmitting.set(true);
+    this.actionErrorMessage.set(null);
+
+    this.complaintService.closeComplaint(id).subscribe({
+      next: (updatedComplaint) => {
+        this.isActionSubmitting.set(false);
+        this.complaint.set(updatedComplaint);
+        this.successMessage.set('Complaint permanently closed as resolved.');
+        setTimeout(() => this.successMessage.set(null), 3000);
+      },
+      error: (err) => {
+        this.isActionSubmitting.set(false);
+        this.actionErrorMessage.set(err.error?.message || 'Failed to close complaint.');
       }
     });
   }
@@ -235,5 +297,21 @@ export class Detail implements OnInit {
       case 'REJECTED': return 'status-rejected';
       default: return 'status-default';
     }
+  }
+
+  onUpvote(): void {
+    const current = this.complaint();
+    if (!current) return;
+    this.isActionSubmitting.set(true);
+    this.complaintService.upvoteComplaint(current.id).subscribe({
+      next: (updated) => {
+        this.complaint.set(updated);
+        this.isActionSubmitting.set(false);
+      },
+      error: (err) => {
+        this.actionErrorMessage.set('Failed to upvote complaint.');
+        this.isActionSubmitting.set(false);
+      }
+    });
   }
 }

@@ -55,14 +55,32 @@ export class ComplaintService {
   }
 
   /**
-   * Final sign-off and resolution of complaint (HOD only)
+   * Approve a complaint (HOD only)
    */
-  resolveComplaint(id: number, hodId: string, hodNote: string): Observable<Complaint> {
+  approveComplaint(id: number, hodId: string, hodNote: string): Observable<Complaint> {
     const params = new HttpParams()
       .set('hodId', hodId)
       .set('hodNote', hodNote);
     
-    return this.http.put<Complaint>(`${this.baseUrl}/${id}/resolve`, null, { params });
+    return this.http.put<Complaint>(`${this.baseUrl}/${id}/approve`, null, { params });
+  }
+
+  /**
+   * Reject a complaint (HOD only)
+   */
+  rejectComplaint(id: number, hodId: string, hodNote: string): Observable<Complaint> {
+    const params = new HttpParams()
+      .set('hodId', hodId)
+      .set('hodNote', hodNote);
+    
+    return this.http.put<Complaint>(`${this.baseUrl}/${id}/reject`, null, { params });
+  }
+
+  /**
+   * Close a complaint (Technician only)
+   */
+  closeComplaint(id: number): Observable<Complaint> {
+    return this.http.put<Complaint>(`${this.baseUrl}/${id}/close`, null);
   }
 
   /**
@@ -113,5 +131,12 @@ export class ComplaintService {
    */
   getPendingApprovals(): Observable<Complaint[]> {
     return this.http.get<Complaint[]>(`${this.baseUrl}/pending-approval`);
+  }
+
+  /**
+   * Upvote a complaint
+   */
+  upvoteComplaint(id: number): Observable<Complaint> {
+    return this.http.put<Complaint>(`${this.baseUrl}/${id}/upvote`, null);
   }
 }

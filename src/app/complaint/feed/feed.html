@@ -102,9 +102,18 @@
           <i class="bi bi-geo-alt-fill"></i> <span>{{ item.location }}</span>
         </div>
 
+        <div class="card-notes mt-2" *ngIf="item.adminNote || item.hodNote" style="background: rgba(var(--bs-light-rgb), 0.5); padding: 0.5rem; border-radius: 4px; font-size: 0.85rem; border-left: 3px solid var(--primary-color);">
+          <div *ngIf="item.adminNote" class="text-muted mb-1">
+            <strong>Tech:</strong> {{ item.adminNote.length > 60 ? (item.adminNote | slice:0:60) + '...' : item.adminNote }}
+          </div>
+          <div *ngIf="item.hodNote" class="text-muted">
+            <strong>HOD:</strong> {{ item.hodNote.length > 60 ? (item.hodNote | slice:0:60) + '...' : item.hodNote }}
+          </div>
+        </div>
+
         <div class="card-footer-row">
           <div class="footer-stats">
-            <span class="stat-item" title="Upvotes">
+            <span class="stat-item" title="Upvotes" (click)="onUpvote(item, $event)" style="cursor: pointer;" [class.text-primary]="item.upvoteCount > 0">
               <i class="bi bi-hand-thumbs-up-fill"></i> {{ item.upvoteCount }}
             </span>
             <span class="stat-item" *ngIf="item.images && item.images.length > 0" title="Attachments">

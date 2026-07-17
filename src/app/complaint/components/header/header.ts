@@ -39,10 +39,10 @@ export class HeaderComponent {
     if (!user) return false;
     const r = user.role ? user.role.toUpperCase() : '';
     const sr = user.subRole ? user.subRole.toUpperCase() : '';
-    return r === 'HOD' || sr === 'HEAD_OF_DEPT';
+    return r === 'HOD' || r === 'HEAD' || sr === 'HEAD_OF_DEPT' || sr === 'HEAD' || sr === 'HOD';
   }
 
   canFile(user: any): boolean {
-    return user && !this.isAdmin(user) && !this.isTechnician(user);
+    return user && !this.isAdmin(user) && !this.isTechnician(user) && !this.isHOD(user);
   }
 }
