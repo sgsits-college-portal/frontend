@@ -33,7 +33,17 @@
 
     </div>
 
-    <div class="table-responsive" *ngIf="leaves && leaves.length">
+    <div *ngIf="isLoading" class="state-box">
+      <i class="bi bi-arrow-repeat"></i>
+      <span>Loading your leave history...</span>
+    </div>
+
+    <div *ngIf="errorMessage" class="alert-danger-box">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <div class="table-responsive" *ngIf="!isLoading && !errorMessage && leaves && leaves.length">
 
       <table>
 
@@ -101,7 +111,7 @@
 
     </div>
 
-    <div class="empty-state" *ngIf="!leaves || leaves.length===0">
+    <div class="empty-state" *ngIf="!isLoading && !errorMessage && (!leaves || leaves.length===0)">
 
       <i class="bi bi-inbox"></i>
 

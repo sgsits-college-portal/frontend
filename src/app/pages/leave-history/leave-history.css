@@ -102,6 +102,29 @@ font-size:3rem;
 margin-bottom:1rem;
 }
 
+.state-box,
+.alert-danger-box{
+display:flex;
+align-items:center;
+gap:.6rem;
+padding:.9rem 1rem;
+border-radius:8px;
+margin-bottom:1rem;
+font-weight:600;
+}
+
+.state-box{
+background:var(--bg-base);
+color:var(--text-muted);
+border:1px solid var(--border-card);
+}
+
+.alert-danger-box{
+background:var(--alert-danger-light);
+color:var(--alert-danger);
+border:1px solid rgba(239,68,68,.25);
+}
+
 .btn-submit{
 background:var(--primary);
 color:white;
