@@ -1,0 +1,132 @@
+<main class="leave-main">
+
+  <div class="header-back-row">
+
+    <a routerLink="/dashboard" class="back-link">
+      <i class="bi bi-arrow-left"></i>
+      Back to Dashboard
+    </a>
+
+    <h2>Leave Approval Dashboard</h2>
+
+    <p class="page-subtitle">
+      Review and manage leave requests submitted by students and staff.
+    </p>
+
+  </div>
+
+  <div class="form-card">
+
+    <div class="table-header">
+
+      <h3>Pending Leave Requests</h3>
+
+    </div>
+
+    <div class="table-responsive" *ngIf="leaves && leaves.length > 0">
+
+      <table>
+
+        <thead>
+
+          <tr>
+            <th>Employee ID</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let leave of leaves">
+
+            <td>#{{leave.employee?.id}}</td>
+
+            <td>{{leave.leaveType}}</td>
+
+            <td>{{leave.startDate}}</td>
+
+            <td>{{leave.endDate}}</td>
+
+            <td>{{leave.reason}}</td>
+
+            <td>
+
+              <span
+                class="status"
+                [ngClass]="{
+                  'pending': leave.status === 'Pending',
+                  'approved': leave.status === 'Approved',
+                  'rejected': leave.status === 'Rejected'
+                }">
+
+                {{leave.status}}
+
+              </span>
+
+            </td>
+
+            <td>
+
+              <div *ngIf="leave.status==='Pending'; else handled">
+
+                <button
+                  class="btn btn-success"
+                  (click)="approve(leave.id)">
+
+                  Approve
+
+                </button>
+
+                <button
+                  class="btn btn-danger"
+                  (click)="reject(leave.id)">
+
+                  Reject
+
+                </button>
+
+              </div>
+
+              <ng-template #handled>
+
+                <span class="handled">
+
+                  Completed
+
+                </span>
+
+              </ng-template>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <div class="empty-state" *ngIf="!leaves || leaves.length===0">
+
+      <i class="bi bi-check-circle"></i>
+
+      <h3>No Pending Requests</h3>
+
+      <p>
+
+        All leave requests have been processed.
+
+      </p>
+
+    </div>
+
+  </div>
+
+</main>

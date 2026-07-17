@@ -1,0 +1,120 @@
+<main class="leave-main">
+
+  <div class="header-back-row">
+
+    <a routerLink="/dashboard" class="back-link">
+      <i class="bi bi-arrow-left"></i>
+      Back to Dashboard
+    </a>
+
+    <h2>Leave History</h2>
+
+    <p class="page-subtitle">
+      Review all your leave requests and their approval status.
+    </p>
+
+  </div>
+
+  <div class="form-card">
+
+    <div class="table-header">
+
+      <h3>My Leave Applications</h3>
+
+      <button
+        routerLink="/leave/apply"
+        class="btn btn-submit">
+
+        <i class="bi bi-plus-circle"></i>
+
+        Apply Leave
+
+      </button>
+
+    </div>
+
+    <div class="table-responsive" *ngIf="leaves && leaves.length">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>ID</th>
+
+            <th>Leave Type</th>
+
+            <th>Start Date</th>
+
+            <th>End Date</th>
+
+            <th>Reason</th>
+
+            <th>Status</th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let leave of leaves">
+
+            <td>#{{leave.id}}</td>
+
+            <td>{{leave.leaveType}}</td>
+
+            <td>{{leave.startDate}}</td>
+
+            <td>{{leave.endDate}}</td>
+
+            <td>{{leave.reason}}</td>
+
+            <td>
+
+              <span
+
+                class="status"
+
+                [ngClass]="{
+
+                  'pending': leave.status==='Pending',
+
+                  'approved': leave.status==='Approved',
+
+                  'rejected': leave.status==='Rejected'
+
+                }">
+
+                {{leave.status}}
+
+              </span>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <div class="empty-state" *ngIf="!leaves || leaves.length===0">
+
+      <i class="bi bi-inbox"></i>
+
+      <h3>No Leave Applications</h3>
+
+      <p>
+
+        You haven't applied for any leave yet.
+
+      </p>
+
+    </div>
+
+  </div>
+
+</main>

@@ -1,0 +1,195 @@
+<app-complaint-header></app-complaint-header>
+
+
+<main class="admin-main-container">
+  <!-- Banner -->
+  <div class="admin-hero-section">
+    <div class="hero-left-content">
+      <h2>Administrative Control Panel</h2>
+      <p>Supervise, route, assign technicians, toggle visibility, and monitor overall resolution timelines across all campus tickets.</p>
+    </div>
+  </div>
+
+  <!-- Filters Row -->
+  <div class="filters-card-wrapper">
+    <div class="filters-grid">
+      <!-- Search Input -->
+      <div class="filter-group search-box-wrapper">
+        <label for="search">Quick Search</label>
+        <div class="search-input-group">
+          <i class="bi bi-search"></i>
+          <input 
+            type="text" 
+            id="search" 
+            [ngModel]="searchFilter()" 
+            (ngModelChange)="searchFilter.set($event)" 
+            placeholder="Search by ID, title, user, technician, room..." />
+        </div>
+      </div>
+
+      <!-- Status Filter -->
+      <div class="filter-group">
+        <label for="status">Status</label>
+        <select id="status" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+          <option value="">All Statuses</option>
+          <option value="OPEN">Open</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="VERIFICATION_PENDING">Pending Verification</option>
+          <option value="RESOLVED">Resolved</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="filter-group">
+        <label for="category">Category</label>
+        <select id="category" [ngModel]="categoryFilter()" (ngModelChange)="categoryFilter.set($event)">
+          <option value="">All Categories</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+
+      <!-- Priority Filter -->
+      <div class="filter-group">
+        <label for="priority">Priority</label>
+        <select id="priority" [ngModel]="priorityFilter()" (ngModelChange)="priorityFilter.set($event)">
+          <option value="">All Priorities</option>
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="HIGH">High</option>
+          <option value="CRITICAL">Critical</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state-wrapper">
+    <div class="spinner"></div>
+    <h3>Fetching Complaints Database...</h3>
+    <p *ngIf="isWarmingUp()" class="warmup-warning">
+      <i class="bi bi-hourglass-split"></i> Server is warming up (cold start). This can take up to 30-40 seconds.
+    </p>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="errorMessage() as errorMsg" class="error-alert-wrapper">
+    <i class="bi bi-exclamation-octagon-fill"></i>
+    <div class="error-text-content">
+      <h4>Database Error</h4>
+      <p>{{ errorMsg }}</p>
+    </div>
+    <button (click)="loadAllComplaints()" class="btn-retry">Retry</button>
+  </div>
+
+  <!-- Main Table View -->
+  <div class="table-card" *ngIf="!isLoading() && !errorMessage()">
+    <div class="table-responsive">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Priority</th>
+            <th>Status</th>
+            <th>Assigned Tech</th>
+            <th>Public Visibility</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of filteredComplaints()">
+            <td><code>#{{ item.id }}</code></td>
+            <td>
+              <div class="title-cell-wrap">
+                <span class="title-bold">{{ item.title }}</span>
+                <span class="user-sub">Filed by: <code>{{ item.userId }}</code></span>
+                <span class="location-sub" *ngIf="item.location"><i class="bi bi-geo-alt"></i> {{ item.location }}</span>
+              </div>
+            </td>
+            <td><span class="category-tag">{{ item.category }}</span></td>
+            <td>
+              <span class="badge" [ngClass]="getPriorityBadgeClass(item.priority)">
+                {{ item.priority }}
+              </span>
+            </td>
+            <td>
+              <span class="status-indicator" [ngClass]="getStatusBadgeClass(item.status)">
+                {{ item.status }}
+              </span>
+            </td>
+            <td>
+              <code *ngIf="item.adminId; else unassigned">{{ item.adminId }}</code>
+              <ng-template #unassigned><span class="unassigned-txt">- Unassigned -</span></ng-template>
+            </td>
+            <td>
+              <div class="form-check form-switch table-switch">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  [id]="'isPublicToggle_' + item.id" 
+                  [ngModel]="item.public"
+                  (ngModelChange)="onToggleVisibility(item, $event)" />
+                <label class="form-check-label small text-muted" [for]="'isPublicToggle_' + item.id">
+                  {{ item.public ? 'Public' : 'Private' }}
+                </label>
+              </div>
+            </td>
+            <td class="text-end">
+              <div class="action-btn-row">
+                <!-- Assign Button (Available if Open or In Progress) -->
+                <button 
+                  *ngIf="item.status === 'OPEN' || item.status === 'IN_PROGRESS'" 
+                  class="btn-icon text-primary" 
+                  (click)="openAssignModal(item)"
+                  title="Assign Technician">
+                  <i class="bi bi-person-fill-gear"></i>
+                </button>
+                <button 
+                  [routerLink]="['/complaints', item.id]" 
+                  class="btn-icon text-secondary" 
+                  title="View Details">
+                  <i class="bi bi-eye-fill"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filteredComplaints().length === 0">
+            <td colspan="8" class="text-center-padding">No grievances matched your filters.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Quick Assign Modal -->
+  <div *ngIf="showAssignModal()" class="custom-modal-backdrop" (click)="showAssignModal.set(false)"></div>
+  <div *ngIf="showAssignModal()" class="custom-modal">
+    <div class="custom-modal-header">
+      <h4>Assign Technician to Complaint #{{ activeComplaintForAssign?.id }}</h4>
+      <button class="btn-icon-close" (click)="showAssignModal.set(false)"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="custom-modal-body">
+      <label for="technicianSelect">Available specialty technicians</label>
+      <select id="technicianSelect" [(ngModel)]="selectedTechnicianId" class="form-input">
+        <option value="" disabled selected>Select a technician...</option>
+        <option *ngFor="let tech of technicians()" [value]="tech.username">
+          {{ tech.fullName }} ({{ tech.username }})
+        </option>
+      </select>
+      <p *ngIf="technicians().length === 0" class="text-danger mt-1 small">
+        No staff with sub-role TECHNICIAN registered in system directories.
+      </p>
+    </div>
+    <div class="custom-modal-footer">
+      <button class="btn btn-secondary" (click)="showAssignModal.set(false)">Cancel</button>
+      <button 
+        class="btn btn-primary" 
+        [disabled]="isActionSubmitting() || !selectedTechnicianId"
+        (click)="onAssignTechnician()">
+        <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Assign Ticket
+      </button>
+    </div>
+  </div>
+</main>

@@ -1,0 +1,57 @@
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Portal Design System Variables */
+:root {
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  
+  /* Color Palette */
+  --bg-base: #FDFBF8;
+  --bg-card: #FFFFFF;
+  --border-card: #F0EBE0;
+  
+  --primary: #1D4ED8;
+  --primary-hover: #1E40AF;
+  
+  --accent: #9E825A;
+  --accent-light: #FBF9F5;
+  
+  --text-main: #2D3748;
+  --text-muted: #718096;
+  
+  --alert-success: #10B981;
+  --alert-success-light: #ECFDF5;
+  
+  --alert-danger: #EF4444;
+  --alert-danger-light: #FEF2F2;
+  
+  /* Borders and Radii */
+  --radius-card: 8px;
+  --radius-field: 6px;
+  --border-width: 1px;
+}
+
+/* Global Reset & Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+input, button, select, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}

@@ -1,0 +1,167 @@
+<main class="leave-main">
+
+  <div class="header-back-row">
+    <a routerLink="/dashboard" class="back-link">
+      <i class="bi bi-arrow-left"></i>
+      Back to Dashboard
+    </a>
+
+    <h2>Apply for Leave</h2>
+
+    <p class="page-subtitle">
+      Submit your leave request through the College Portal.
+    </p>
+
+    <!-- ===== Leave Navigation ===== -->
+
+    <div class="page-actions">
+
+      <button
+        routerLink="/leave/history"
+        type="button"
+        class="btn btn-secondary">
+
+        <i class="bi bi-clock-history"></i>
+        Leave History
+
+      </button>
+
+      <button
+        routerLink="/leave/admin"
+        type="button"
+        class="btn btn-secondary">
+
+        <i class="bi bi-person-check-fill"></i>
+        Admin Dashboard
+
+      </button>
+
+    </div>
+
+    <!-- ============================ -->
+
+  </div>
+
+  <div class="form-card">
+
+    <!-- Success -->
+    <div *ngIf="successMessage" class="alert-success-box">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ successMessage }}</span>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="errorMessage" class="alert-danger-box">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ errorMessage }}</span>
+    </div>
+
+    <form (ngSubmit)="applyLeave()" #leaveForm="ngForm">
+
+      <div class="form-grid">
+
+        <!-- Leave Type -->
+        <div class="form-group span-2">
+          <label>
+            Leave Type
+            <span class="required">*</span>
+          </label>
+
+          <select
+            name="leaveType"
+            [(ngModel)]="leaveType"
+            required>
+
+            <option value="" disabled selected>
+              Select Leave Type
+            </option>
+
+            <option value="Casual Leave">Casual Leave</option>
+            <option value="Sick Leave">Sick Leave</option>
+            <option value="Earned Leave">Earned Leave</option>
+
+          </select>
+        </div>
+
+        <!-- Start Date -->
+        <div class="form-group">
+          <label>
+            Start Date
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="date"
+            name="startDate"
+            [(ngModel)]="startDate"
+            required>
+
+        </div>
+
+        <!-- End Date -->
+        <div class="form-group">
+          <label>
+            End Date
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="date"
+            name="endDate"
+            [(ngModel)]="endDate"
+            required>
+
+        </div>
+
+        <!-- Reason -->
+        <div class="form-group span-2">
+
+          <label>
+            Reason
+            <span class="required">*</span>
+          </label>
+
+          <textarea
+            rows="5"
+            name="reason"
+            [(ngModel)]="reason"
+            required
+            placeholder="Enter the reason for leave...">
+          </textarea>
+
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          routerLink="/dashboard"
+          class="btn btn-secondary">
+
+          Cancel
+
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-submit"
+          [disabled]="!leaveForm.valid || isLoading">
+
+          <span
+            *ngIf="isLoading"
+            class="spinner-sm">
+          </span>
+
+          {{ isLoading ? 'Submitting...' : 'Submit Leave Request' }}
+
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</main>

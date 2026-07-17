@@ -1,0 +1,126 @@
+<app-complaint-header></app-complaint-header>
+
+
+<main class="my-complaints-main">
+  <!-- Hero Banner Section -->
+  <div class="my-hero-section">
+    <div class="hero-left-content">
+      <h2>My Filed Grievances</h2>
+      <p>Monitor status, response notes, and verification tracking for all tickets you've submitted.</p>
+    </div>
+    <div class="hero-right-action" *ngIf="user()?.role === 'STUDENT'">
+      <button class="btn-create-complaint" (click)="navigateToNewComplaint()">
+        <i class="bi bi-plus-lg"></i> File New Complaint
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Row -->
+  <div class="filters-card-wrapper">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="status">Filter by Status</label>
+        <select id="status" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+          <option value="">All Complaints</option>
+          <option value="OPEN">Open</option>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="VERIFICATION_PENDING">Pending Verification</option>
+          <option value="RESOLVED">Resolved</option>
+          <option value="REJECTED">Rejected</option>
+        </select>
+      </div>
+      
+      <div class="stats-overview" *ngIf="complaints().length > 0">
+        <span class="stat-pill">Total: <strong>{{ complaints().length }}</strong></span>
+        <span class="stat-pill">Resolved: <strong>{{ (complaints() | slice:0).filter(c => c.status === 'RESOLVED').length }}</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state-wrapper">
+    <div class="spinner"></div>
+    <h3>Loading your complaints...</h3>
+    <p *ngIf="isWarmingUp()" class="warmup-warning">
+      <i class="bi bi-hourglass-split"></i> Server is warming up (cold start). This may take up to 30-40 seconds.
+    </p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage() as errorMsg" class="error-alert-wrapper">
+    <i class="bi bi-exclamation-octagon-fill"></i>
+    <div class="error-text-content">
+      <h4>Unable to Retrieve Complaints</h4>
+      <p>{{ errorMsg }}</p>
+    </div>
+    <button (click)="loadMyComplaints()" class="btn-retry">Retry</button>
+  </div>
+
+  <!-- Content Grid -->
+  <div *ngIf="!isLoading() && !errorMessage()">
+    <div *ngIf="filteredComplaints().length > 0; else noComplaints" class="complaints-list-layout">
+      
+      <!-- Complaint Item Row -->
+      <div *ngFor="let item of filteredComplaints()" class="complaint-list-item" [routerLink]="['/complaints', item.id]">
+        <!-- Left Side: Status / General Badge Info -->
+        <div class="item-left-col">
+          <div class="status-indicator" [ngClass]="getStatusBadgeClass(item.status)">
+            {{ item.status }}
+          </div>
+          <span class="priority-tag" [ngClass]="getPriorityBadgeClass(item.priority)">
+            {{ item.priority }}
+          </span>
+        </div>
+
+        <!-- Center: Title, Description, Location -->
+        <div class="item-center-col">
+          <div class="title-row">
+            <h3 class="item-title">{{ item.title }}</h3>
+            <span class="visibility-indicator" [title]="item.public ? 'Public Feed Visible' : 'Private Grievance'">
+              <i class="bi" [class.bi-globe]="item.public" [class.bi-lock-fill]="!item.public"></i>
+              {{ item.public ? 'Public' : 'Private' }}
+            </span>
+          </div>
+
+          <p class="item-desc">
+            {{ item.description.length > 200 ? (item.description | slice:0:200) + '...' : item.description }}
+          </p>
+
+          <div class="meta-row">
+            <span class="meta-badge category"><i class="bi bi-tag-fill"></i> {{ item.category }}</span>
+            <span class="meta-badge location" *ngIf="item.location"><i class="bi bi-geo-alt-fill"></i> {{ item.location }}</span>
+            <span class="meta-badge attachments" *ngIf="item.images && item.images.length > 0">
+              <i class="bi bi-paperclip"></i> {{ item.images.length }} Attachments
+            </span>
+          </div>
+        </div>
+
+        <!-- Right Side: Metadata / Dates & Upvotes -->
+        <div class="item-right-col">
+          <div class="upvotes-box">
+            <i class="bi bi-hand-thumbs-up-fill"></i>
+            <span>{{ item.upvoteCount }}</span>
+          </div>
+          <div class="date-box">
+            <span class="date-label">Filed On</span>
+            <span class="date-val">{{ item.createdAt | date:'mediumDate' }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Empty State -->
+    <ng-template #noComplaints>
+      <div class="empty-state-wrapper">
+        <i class="bi bi-inbox-fill"></i>
+        <h3>No Complaints Found</h3>
+        <p>You haven't filed any complaints matching this status filter yet.</p>
+        <button *ngIf="user() as currUser; else noBtn" [style.display]="canFile(currUser) ? 'inline-block' : 'none'" class="btn-create-complaint" (click)="navigateToNewComplaint()">
+          File Your First Complaint
+        </button>
+        <ng-template #noBtn></ng-template>
+      </div>
+    </ng-template>
+  </div>
+</main>

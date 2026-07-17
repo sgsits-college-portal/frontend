@@ -1,0 +1,186 @@
+.custom-header {
+  background-color: var(--bg-card, #ffffff);
+  border-bottom: 1px solid var(--border-card, #e2e8f0);
+  padding: 1rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.brand-section {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2);
+}
+
+.brand-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-main, #1e293b);
+  line-height: 1.1;
+}
+
+.brand-subtitle {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--accent, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.nav-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.user-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-right: 1.25rem;
+  border-right: 1px solid var(--border-card, #e2e8f0);
+}
+
+.avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--border-card, #e2e8f0);
+  color: #1D4ED8;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+.user-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-main, #1e293b);
+}
+
+.user-role-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  width: fit-content;
+  margin-top: 0.1rem;
+}
+
+.user-role-badge.student {
+  background-color: rgba(29, 78, 216, 0.1);
+  color: #1D4ED8;
+}
+
+.user-role-badge.staff, .user-role-badge.librarian {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10B981;
+}
+
+.user-role-badge.faculty, .user-role-badge.head, .user-role-badge.hod {
+  background-color: rgba(158, 130, 90, 0.12);
+  color: #9E825A;
+}
+
+.user-role-badge.admin {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+}
+
+.sub-role-tag {
+  font-size: 0.65rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .custom-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .user-profile-card {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .user-name {
+    display: none;
+  }
+}
+
+
+.sub-nav-bar {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 3rem;
+}
+
+.sub-nav-container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.nav-tab:hover {
+  color: #1D4ED8;
+}
+
+.active-tab {
+  color: #1D4ED8 !important;
+  border-bottom-color: #1D4ED8;
+}

@@ -1,0 +1,370 @@
+<app-complaint-header></app-complaint-header>
+
+
+<main class="detail-main-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state-wrapper">
+    <div class="spinner"></div>
+    <h3>Loading complaint details...</h3>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage() as errorMsg" class="error-state-wrapper">
+    <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem; color: var(--alert-danger);"></i>
+    <h3>Access Denied / Not Found</h3>
+    <p>{{ errorMsg }}</p>
+    <button (click)="router.navigate(['/complaints/feed'])" class="btn btn-secondary mt-2">Back to Public Feed</button>
+  </div>
+
+  <ng-container *ngIf="!isLoading() && !errorMessage() && complaint() as item">
+    
+    <!-- Top back navigation -->
+    <div class="header-back-row">
+      <a (click)="router.navigate(['/dashboard'])" class="back-link" style="cursor: pointer;">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+      </a>
+      <div class="title-wrap">
+        <h2>Grievance #{{ item.id }}: {{ item.title }}</h2>
+        <span class="created-stamp">Filed by <strong>{{ item.userId }}</strong> on {{ item.createdAt | date:'medium' }}</span>
+      </div>
+    </div>
+
+    <!-- Alert notifications -->
+    <div *ngIf="successMessage() as msg" class="alert-success-box">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ msg }}</span>
+    </div>
+    <div *ngIf="actionErrorMessage() as err" class="alert-danger-box">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ err }}</span>
+    </div>
+
+    <!-- Detail Dashboard Layout Grid -->
+    <div class="detail-grid">
+      
+      <!-- Left Column: Media & Description -->
+      <div class="detail-left-col">
+        
+        <!-- Image Carousel if attached -->
+        <div class="carousel-card" *ngIf="item.images && item.images.length > 0">
+          <div class="carousel-container">
+            <button class="carousel-btn prev" (click)="prevImage()" *ngIf="item.images.length > 1">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            
+            <div class="carousel-slide">
+              <img [src]="item.images[activeImageIndex()].imageUrl" alt="Complaint attachment" />
+              <div class="slide-count">Image {{ activeImageIndex() + 1 }} of {{ item.images.length }}</div>
+            </div>
+
+            <button class="carousel-btn next" (click)="nextImage()" *ngIf="item.images.length > 1">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+          <!-- Thumbnails indicator dots -->
+          <div class="carousel-dots" *ngIf="item.images.length > 1">
+            <span 
+              *ngFor="let img of item.images; let idx = index" 
+              class="dot" 
+              [class.active]="idx === activeImageIndex()"
+              (click)="activeImageIndex.set(idx)"></span>
+          </div>
+        </div>
+
+        <!-- Description Card -->
+        <div class="info-card description-card">
+          <h3>Issue Description</h3>
+          <p class="description-text">{{ item.description }}</p>
+          
+          <div class="location-box" *ngIf="item.location">
+            <i class="bi bi-geo-alt-fill"></i>
+            <div>
+              <strong>Reported Location</strong>
+              <span>{{ item.location }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Log Card -->
+        <div class="info-card log-card">
+          <h3>Action Log & Notes</h3>
+          <div class="log-timeline">
+            <!-- Filed Step -->
+            <div class="log-item">
+              <div class="log-icon status-resolved"><i class="bi bi-plus-lg"></i></div>
+              <div class="log-content">
+                <strong>Complaint Registered</strong>
+                <span class="log-time">{{ item.createdAt | date:'medium' }}</span>
+                <p class="log-p">Grievance submitted in system database under category '{{ item.category }}'.</p>
+              </div>
+            </div>
+
+            <!-- Assigned Step -->
+            <div class="log-item" *ngIf="item.adminId">
+              <div class="log-icon status-progress"><i class="bi bi-person-fill-gear"></i></div>
+              <div class="log-content">
+                <strong>Technician Assigned</strong>
+                <span class="log-time">Assigned to: <code>{{ item.adminId }}</code></span>
+                <p class="log-p">Dispatched by admin: <code>{{ item.dispatcherId }}</code></p>
+              </div>
+            </div>
+
+            <!-- Verification Step -->
+            <div class="log-item" *ngIf="item.adminNote">
+              <div class="log-icon status-pending"><i class="bi bi-chat-left-text-fill"></i></div>
+              <div class="log-content">
+                <strong>Work Completion Submitted</strong>
+                <p class="log-note">"{{ item.adminNote }}"</p>
+              </div>
+            </div>
+
+            <!-- Resolved Step -->
+            <div class="log-item" *ngIf="item.hodNote">
+              <div class="log-icon status-resolved"><i class="bi bi-check2-circle"></i></div>
+              <div class="log-content">
+                <strong>HOD Resolved Sign-Off</strong>
+                <span class="log-time">Verified by HOD: <code>{{ item.hodId }}</code></span>
+                <p class="log-note">"{{ item.hodNote }}"</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Status Summary, Timeline, Action Panels -->
+      <div class="detail-right-col">
+        
+        <!-- Summary Stats Card -->
+        <div class="summary-stats-card">
+          <div class="stats-header-row">
+            <span class="status-indicator" [ngClass]="getStatusBadgeClass(item.status)">
+              {{ item.status }}
+            </span>
+            <span class="priority-tag" [ngClass]="getPriorityBadgeClass(item.priority)">
+              {{ item.priority }}
+            </span>
+          </div>
+
+          <div class="stats-body">
+            <div class="stat-info-row">
+              <span class="stat-label">Category:</span>
+              <span class="stat-value"><strong>{{ item.category }}</strong></span>
+            </div>
+            <div class="stat-info-row">
+              <span class="stat-label">Visibility:</span>
+              <span class="stat-value">
+                <i class="bi" [class.bi-lock-fill]="!item.public" [class.bi-globe]="item.public"></i>
+                <strong>{{ item.public ? 'Public Feed' : 'Private' }}</strong>
+              </span>
+            </div>
+            <div class="stat-info-row">
+              <span class="stat-label">Upvotes:</span>
+              <span class="stat-value upvote-count">
+                <button class="btn btn-sm btn-outline-primary" (click)="onUpvote()" [disabled]="isActionSubmitting()" style="border: none; background: none; color: inherit; padding: 0; cursor: pointer;" [class.text-primary]="item.upvoteCount > 0">
+                  <i class="bi bi-hand-thumbs-up-fill"></i> <strong>{{ item.upvoteCount }}</strong>
+                </button>
+              </span>
+            </div>
+            <div class="stat-info-row">
+              <span class="stat-label">Last Updated:</span>
+              <span class="stat-value">{{ item.updatedAt | date:'short' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual State Machine Tracking Timeline -->
+        <div class="state-tracker-card">
+          <h3>Resolution Progress</h3>
+          <div class="state-timeline-progress">
+            <div class="step-item" [class.active-step]="item.status === 'OPEN' || item.status === 'IN_PROGRESS' || item.status === 'VERIFICATION_PENDING' || item.status === 'RESOLVED'">
+              <div class="step-circle"><i class="bi bi-check-lg"></i></div>
+              <div class="step-label">Open</div>
+            </div>
+            <div class="step-item" [class.active-step]="item.status === 'IN_PROGRESS' || item.status === 'VERIFICATION_PENDING' || item.status === 'RESOLVED'">
+              <div class="step-line"></div>
+              <div class="step-circle"><i class="bi bi-tools"></i></div>
+              <div class="step-label">In Progress</div>
+            </div>
+            <div class="step-item" [class.active-step]="item.status === 'VERIFICATION_PENDING' || item.status === 'RESOLVED'">
+              <div class="step-line"></div>
+              <div class="step-circle"><i class="bi bi-patch-exclamation"></i></div>
+              <div class="step-label">Verification</div>
+            </div>
+            <div class="step-item" [class.active-step]="item.status === 'RESOLVED'">
+              <div class="step-line"></div>
+              <div class="step-circle"><i class="bi bi-flag-fill"></i></div>
+              <div class="step-label">Resolved</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Role Action Panel -->
+        <div class="action-panel-card" *ngIf="user() as currentUser">
+          
+          <!-- 1. ADMIN ACTIONS PANEL -->
+          <ng-container *ngIf="currentUser.role === 'ADMIN'">
+            <h3>Administrative Action Panel</h3>
+            <div class="admin-actions-grid">
+              
+              <!-- Assign Button (if status is OPEN) -->
+              <button 
+                *ngIf="item.status === 'OPEN'"
+                (click)="showAssignModal.set(true)" 
+                class="action-btn primary-btn">
+                <i class="bi bi-person-fill-gear"></i> Assign Technician
+              </button>
+              
+              <button 
+                *ngIf="item.status === 'IN_PROGRESS'"
+                (click)="showAssignModal.set(true)" 
+                class="action-btn warning-btn">
+                <i class="bi bi-person-fill-exclamation"></i> Reassign Technician
+              </button>
+
+              <div class="visibility-toggle-group">
+                <span class="toggle-label">Visible to Public Feed?</span>
+                <div class="form-check form-switch mt-1">
+                  <input 
+                    class="form-check-input" 
+                    type="checkbox" 
+                    id="isPublicToggle" 
+                    [ngModel]="item.public"
+                    (ngModelChange)="onToggleVisibility($event)"
+                    [disabled]="isActionSubmitting()" />
+                  <label class="form-check-label text-muted" for="isPublicToggle">
+                    {{ item.public ? 'Publicly visible' : 'Private to owner & admin' }}
+                  </label>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- 2. TECHNICIAN ACTION PANEL -->
+          <ng-container *ngIf="isAssignedTechnician">
+            <h3>Technician Action Panel</h3>
+            
+            <div *ngIf="item.status === 'IN_PROGRESS'; else techStatusHint">
+              <!-- If HOD Note exists, it was approved by HOD and sent back to fix -->
+              <div *ngIf="item.hodNote">
+                <div class="alert alert-info" style="margin-bottom: 1rem; padding: 1rem; border-radius: 8px; background: rgba(var(--bs-info-rgb), 0.1); border: 1px solid rgba(var(--bs-info-rgb), 0.2);">
+                  <strong>HOD Approval Note:</strong> {{ item.hodNote }}
+                </div>
+                <p>The HOD has approved your initial assessment. You may now perform the final fix and close the complaint.</p>
+                <button 
+                  (click)="onCloseComplaint()" 
+                  [disabled]="isActionSubmitting()" 
+                  class="action-btn primary-btn mt-2">
+                  <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Close Complaint (Resolved)
+                </button>
+              </div>
+
+              <!-- Initial state: Forward to HOD -->
+              <div *ngIf="!item.hodNote">
+                <label for="adminNote">Report work details for verification <span class="required">*</span></label>
+                <textarea 
+                  id="adminNote" 
+                  [(ngModel)]="adminNoteInput" 
+                  rows="3" 
+                  placeholder="Detail what steps were taken to resolve this problem..." 
+                  class="form-control-textarea mt-1"></textarea>
+                <small class="form-hint mt-1 d-block">Minimum 10 characters.</small>
+                
+                <button 
+                  (click)="onSubmitVerification()" 
+                  [disabled]="isActionSubmitting() || !adminNoteInput || adminNoteInput.trim().length < 10" 
+                  class="action-btn success-btn mt-3">
+                  <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Forward to HOD
+                </button>
+              </div>
+            </div>
+            
+            <ng-template #techStatusHint>
+              <div class="status-hint" *ngIf="item.status !== 'RESOLVED' && item.status !== 'REJECTED'">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>This task is currently <strong>{{ item.status }}</strong>. Waiting for HOD verification.</span>
+              </div>
+            </ng-template>
+          </ng-container>
+
+          <!-- 3. HOD RESOLVE ACTION PANEL -->
+          <ng-container *ngIf="isHOD">
+            <h3>HOD Resolution Panel</h3>
+            
+            <div *ngIf="item.status === 'VERIFICATION_PENDING'; else hodStatusHint">
+              <div class="tech-submission-box" style="margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-left: 4px solid var(--primary-color);">
+                <strong>Technician Resolution Worknote:</strong>
+                <p style="margin: 0.5rem 0 0 0;">"{{ item.adminNote || 'No work note provided.' }}"</p>
+              </div>
+
+              <label for="hodNote" class="mt-3">Verification and sign-off comment <span class="required">*</span></label>
+              <textarea 
+                id="hodNote" 
+                [(ngModel)]="hodNoteInput" 
+                rows="3" 
+                placeholder="Add verification details (e.g. checked and approved)..." 
+                class="form-control-textarea mt-1"></textarea>
+              <small class="form-hint mt-1 d-block">Minimum 10 characters.</small>
+
+              <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button 
+                  (click)="onApproveComplaint()" 
+                  [disabled]="isActionSubmitting() || !hodNoteInput || hodNoteInput.trim().length < 10" 
+                  class="action-btn success-btn" style="flex: 1;">
+                  <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Approve
+                </button>
+                <button 
+                  (click)="onRejectComplaint()" 
+                  [disabled]="isActionSubmitting() || !hodNoteInput || hodNoteInput.trim().length < 10" 
+                  class="action-btn warning-btn" style="flex: 1; background-color: var(--alert-danger); border-color: var(--alert-danger); color: white;">
+                  <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Reject
+                </button>
+              </div>
+            </div>
+
+            <ng-template #hodStatusHint>
+              <div class="status-hint">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>This ticket is in status <strong>{{ item.status }}</strong>. Verification is only available when pending.</span>
+              </div>
+            </ng-template>
+          </ng-container>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Admin Assign Technician Modal -->
+    <div *ngIf="showAssignModal()" class="custom-modal-backdrop" (click)="showAssignModal.set(false)"></div>
+    <div *ngIf="showAssignModal()" class="custom-modal">
+      <div class="custom-modal-header">
+        <h4>Assign technician for Complaint #{{ item.id }}</h4>
+        <button class="btn-icon-close" (click)="showAssignModal.set(false)"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="custom-modal-body">
+        <label for="technicianSelect">Available specialty technicians</label>
+        <select id="technicianSelect" [(ngModel)]="selectedTechnicianId" class="form-input">
+          <option value="" disabled selected>Select a technician...</option>
+          <option *ngFor="let tech of technicians()" [value]="tech.username">
+            {{ tech.fullName }} ({{ tech.username }})
+          </option>
+        </select>
+        <p *ngIf="technicians().length === 0" class="text-danger mt-1 small">
+          No staff with sub-role TECHNICIAN registered in system directories.
+        </p>
+      </div>
+      <div class="custom-modal-footer">
+        <button class="btn btn-secondary" (click)="showAssignModal.set(false)">Cancel</button>
+        <button 
+          class="btn btn-primary" 
+          [disabled]="isActionSubmitting() || !selectedTechnicianId"
+          (click)="onAssignTechnician()">
+          <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Assign Ticket
+        </button>
+      </div>
+    </div>
+
+  </ng-container>
+</main>

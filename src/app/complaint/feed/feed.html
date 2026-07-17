@@ -1,0 +1,143 @@
+<app-complaint-header></app-complaint-header>
+
+
+<main class="feed-main-container">
+  <!-- Top Banner / Hero -->
+  <div class="feed-hero-section">
+    <div class="hero-left-content">
+      <h2>Public Grievance Feed</h2>
+      <p>Browse campus complaints raised by fellow students. Vote, track, and witness open resolutions.</p>
+    </div>
+    <div class="hero-right-action" *ngIf="user() as currUser">
+      <button *ngIf="canFile(currUser)" class="btn-create-complaint" (click)="navigateToNewComplaint()">
+        <i class="bi bi-plus-lg"></i> File New Complaint
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Panel -->
+  <div class="filters-card-wrapper">
+    <div class="filters-grid">
+      <!-- Search Input -->
+      <div class="filter-group search-box-wrapper">
+        <label for="search">Search Feed</label>
+        <div class="search-input-group">
+          <i class="bi bi-search"></i>
+          <input 
+            type="text" 
+            id="search" 
+            [ngModel]="searchFilter()" 
+            (ngModelChange)="searchFilter.set($event)" 
+            placeholder="Search by title, category, description, room..." />
+        </div>
+      </div>
+
+      <!-- Category Filter -->
+      <div class="filter-group">
+        <label for="category">Category</label>
+        <select id="category" [ngModel]="categoryFilter()" (ngModelChange)="categoryFilter.set($event)">
+          <option value="">All Categories</option>
+          <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+        </select>
+      </div>
+
+      <!-- Priority Filter -->
+      <div class="filter-group">
+        <label for="priority">Priority</label>
+        <select id="priority" [ngModel]="priorityFilter()" (ngModelChange)="priorityFilter.set($event)">
+          <option value="">All Priorities</option>
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="HIGH">High</option>
+          <option value="CRITICAL">Critical</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state-wrapper">
+    <div class="spinner"></div>
+    <h3>Fetching Public Feed...</h3>
+    <p *ngIf="isWarmingUp()" class="warmup-warning">
+      <i class="bi bi-hourglass-split"></i> Backend server is waking up (cold start). This can take up to 30-40 seconds. Thank you for your patience!
+    </p>
+  </div>
+
+  <!-- Error Alert -->
+  <div *ngIf="errorMessage() as errorMsg" class="error-alert-wrapper">
+    <i class="bi bi-exclamation-octagon-fill"></i>
+    <div class="error-text-content">
+      <h4>Connection Error</h4>
+      <p>{{ errorMsg }}</p>
+    </div>
+    <button (click)="loadFeed()" class="btn-retry">Retry</button>
+  </div>
+
+  <!-- Complaints Grid -->
+  <div *ngIf="!isLoading() && !errorMessage()">
+    <div *ngIf="filteredComplaints().length > 0; else noComplaints" class="complaints-grid-layout">
+      
+      <!-- Complaint Card -->
+      <div *ngFor="let item of filteredComplaints()" class="complaint-card" [routerLink]="['/complaints', item.id]">
+        <div class="card-badges-row">
+          <span class="category-tag">{{ item.category }}</span>
+          <div class="badge-group">
+            <span class="badge" [ngClass]="getPriorityBadgeClass(item.priority)">
+              {{ item.priority }}
+            </span>
+            <span class="badge" [ngClass]="getStatusBadgeClass(item.status)">
+              {{ item.status }}
+            </span>
+          </div>
+        </div>
+
+        <h3 class="card-title">{{ item.title }}</h3>
+        
+        <p class="card-desc">
+          {{ item.description.length > 140 ? (item.description | slice:0:140) + '...' : item.description }}
+        </p>
+
+        <div class="card-location" *ngIf="item.location">
+          <i class="bi bi-geo-alt-fill"></i> <span>{{ item.location }}</span>
+        </div>
+
+        <div class="card-notes mt-2" *ngIf="item.adminNote || item.hodNote" style="background: rgba(var(--bs-light-rgb), 0.5); padding: 0.5rem; border-radius: 4px; font-size: 0.85rem; border-left: 3px solid var(--primary-color);">
+          <div *ngIf="item.adminNote" class="text-muted mb-1">
+            <strong>Tech:</strong> {{ item.adminNote.length > 60 ? (item.adminNote | slice:0:60) + '...' : item.adminNote }}
+          </div>
+          <div *ngIf="item.hodNote" class="text-muted">
+            <strong>HOD:</strong> {{ item.hodNote.length > 60 ? (item.hodNote | slice:0:60) + '...' : item.hodNote }}
+          </div>
+        </div>
+
+        <div class="card-footer-row">
+          <div class="footer-stats">
+            <span class="stat-item" title="Upvotes" (click)="onUpvote(item, $event)" style="cursor: pointer;" [class.text-primary]="item.upvoteCount > 0">
+              <i class="bi bi-hand-thumbs-up-fill"></i> {{ item.upvoteCount }}
+            </span>
+            <span class="stat-item" *ngIf="item.images && item.images.length > 0" title="Attachments">
+              <i class="bi bi-paperclip"></i> {{ item.images.length }}
+            </span>
+          </div>
+          <span class="card-time">
+            {{ item.createdAt | date:'mediumDate' }}
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Empty State -->
+    <ng-template #noComplaints>
+      <div class="empty-state-wrapper">
+        <i class="bi bi-journal-x"></i>
+        <h3>No Public Complaints Found</h3>
+        <p>No complaints match your filters or there are no public grievances filed yet.</p>
+        <button *ngIf="user()?.role === 'STUDENT'" class="btn-create-complaint" (click)="navigateToNewComplaint()">
+          Submit First Complaint
+        </button>
+      </div>
+    </ng-template>
+  </div>
+</main>

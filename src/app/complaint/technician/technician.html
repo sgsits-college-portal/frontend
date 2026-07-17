@@ -1,0 +1,145 @@
+<app-complaint-header></app-complaint-header>
+
+
+<main class="tech-main-container">
+  <!-- Banner -->
+  <div class="tech-hero-section">
+    <div class="hero-left-content">
+      <h2>My Assigned Tasks</h2>
+      <p>Manage work orders assigned to you. Perform repairs, report completion notes, and request approvals.</p>
+    </div>
+  </div>
+
+  <!-- Filters Row -->
+  <div class="filters-card-wrapper">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label for="status">Status Filter</label>
+        <select id="status" [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+          <option value="">All Tasks</option>
+          <option value="IN_PROGRESS">Active Work</option>
+          <option value="VERIFICATION_PENDING">Awaiting Verification</option>
+          <option value="RESOLVED">Resolved / Completed</option>
+        </select>
+      </div>
+
+      <div class="stats-overview" *ngIf="complaints().length > 0">
+        <span class="stat-pill">Assigned: <strong>{{ complaints().length }}</strong></span>
+        <span class="stat-pill">Pending: <strong>{{ (complaints() | slice:0).filter(c => c.status === 'IN_PROGRESS').length }}</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state-wrapper">
+    <div class="spinner"></div>
+    <h3>Loading assigned tasks...</h3>
+    <p *ngIf="isWarmingUp()" class="warmup-warning">
+      <i class="bi bi-hourglass-split"></i> Server is warming up (cold start)...
+    </p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage() as errorMsg" class="error-alert-wrapper">
+    <i class="bi bi-exclamation-octagon-fill"></i>
+    <div class="error-text-content">
+      <h4>Unable to Retrieve Tasks</h4>
+      <p>{{ errorMsg }}</p>
+    </div>
+    <button (click)="loadAssignedTasks()" class="btn-retry">Retry</button>
+  </div>
+
+  <!-- Content Grid -->
+  <div *ngIf="!isLoading() && !errorMessage()">
+    <div *ngIf="filteredComplaints().length > 0; else noTasks" class="tasks-grid">
+      
+      <!-- Task Card -->
+      <div *ngFor="let item of filteredComplaints()" class="task-card">
+        <div class="card-header-row">
+          <span class="id-tag"><code>#{{ item.id }}</code></span>
+          <div class="badge-group">
+            <span class="badge" [ngClass]="getPriorityBadgeClass(item.priority)">
+              {{ item.priority }}
+            </span>
+            <span class="status-badge" [ngClass]="getStatusBadgeClass(item.status)">
+              {{ item.status }}
+            </span>
+          </div>
+        </div>
+
+        <h3 class="card-title">{{ item.title }}</h3>
+        
+        <p class="card-desc">
+          {{ item.description.length > 140 ? (item.description | slice:0:140) + '...' : item.description }}
+        </p>
+
+        <div class="card-meta">
+          <div class="meta-item category" title="Category">
+            <i class="bi bi-tag-fill"></i> <span>{{ item.category }}</span>
+          </div>
+          <div class="meta-item location" *ngIf="item.location" title="Location">
+            <i class="bi bi-geo-alt-fill"></i> <span>{{ item.location }}</span>
+          </div>
+        </div>
+
+        <div class="card-footer-row">
+          <span class="assigned-date">Assigned On: {{ item.updatedAt | date:'mediumDate' }}</span>
+          
+          <div class="action-btn-row">
+            <button 
+              *ngIf="item.status === 'IN_PROGRESS'" 
+              class="btn-action submit-fix-btn" 
+              (click)="openFixModal(item)"
+              title="Submit Work Verification">
+              <i class="bi bi-check2"></i> Submit Fix
+            </button>
+            <button 
+              [routerLink]="['/complaints', item.id]" 
+              class="btn-action view-btn" 
+              title="View Detail Timeline">
+              <i class="bi bi-eye"></i> Details
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Empty State -->
+    <ng-template #noTasks>
+      <div class="empty-state-wrapper">
+        <i class="bi bi-card-checklist"></i>
+        <h3>No Assigned Tasks Found</h3>
+        <p>You have no active work orders assigned to your queue.</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Submit Fix Worknote Modal -->
+  <div *ngIf="showFixModal()" class="custom-modal-backdrop" (click)="showFixModal.set(false)"></div>
+  <div *ngIf="showFixModal()" class="custom-modal">
+    <div class="custom-modal-header">
+      <h4>Submit Fix Worknote for Complaint #{{ activeComplaintForFix?.id }}</h4>
+      <button class="btn-icon-close" (click)="showFixModal.set(false)"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="custom-modal-body">
+      <label for="fixNote">Work Done Description <span class="required">*</span></label>
+      <textarea 
+        id="fixNote" 
+        [(ngModel)]="adminNoteInput" 
+        rows="4" 
+        placeholder="Detail what was repaired or fixed so the HOD can sign-off..."
+        class="form-control-textarea"></textarea>
+      <small class="form-hint">Provide at least 10 characters.</small>
+    </div>
+    <div class="custom-modal-footer">
+      <button class="btn btn-secondary" (click)="showFixModal.set(false)">Cancel</button>
+      <button 
+        class="btn btn-primary" 
+        [disabled]="isActionSubmitting() || !adminNoteInput || adminNoteInput.trim().length < 10"
+        (click)="onSubmitFix()">
+        <span *ngIf="isActionSubmitting()" class="spinner-sm"></span> Submit for Verification
+      </button>
+    </div>
+  </div>
+</main>
