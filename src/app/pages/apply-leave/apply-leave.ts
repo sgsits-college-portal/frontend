@@ -30,7 +30,7 @@ export class ApplyLeave {
     this.successMessage = '';
     this.errorMessage = '';
 
-    const employee = JSON.parse(localStorage.getItem('employee') || '{}');
+    const employee = JSON.parse(localStorage.getItem('sgsits_auth_user') || '{}');
 
     const leave = {
       leaveType: this.leaveType,
@@ -38,9 +38,7 @@ export class ApplyLeave {
       endDate: this.endDate,
       reason: this.reason,
       status: 'Pending',
-      employee: {
-        id: employee.id
-      }
+      employeeId: employee.id
     };
 
     this.auth.applyLeave(leave).subscribe({

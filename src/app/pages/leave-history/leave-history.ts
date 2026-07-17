@@ -19,7 +19,7 @@ export class LeaveHistory implements OnInit {
   constructor(private auth: Auth) {}
 
   ngOnInit(): void {
-    const employee = JSON.parse(localStorage.getItem('employee') || '{}');
+    const employee = JSON.parse(localStorage.getItem('sgsits_auth_user') || '{}');
 
     this.auth.getEmployeeLeaves(employee.id).subscribe({
       next: (response: any) => {
