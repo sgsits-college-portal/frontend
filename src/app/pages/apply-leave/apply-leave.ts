@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -17,20 +17,38 @@ export class ApplyLeave {
   startDate = '';
   endDate = '';
   reason = '';
+  canManageLeaves = false;
 
   // UI state managers
   isLoading = false;
   successMessage = '';
   errorMessage = '';
 
-  constructor(private auth: Auth) {}
+  constructor(private auth: Auth, private cdr: ChangeDetectorRef) {
+    this.canManageLeaves = this.isLeaveApprover();
+  }
+
+  private isLeaveApprover(): boolean {
+    const user = JSON.parse(localStorage.getItem('sgsits_auth_user') || '{}');
+    const role = (user.role || '').toUpperCase().trim();
+    const subRole = (user.subRole || '').toUpperCase().trim();
+
+    return ['ADMIN', 'HEAD', 'HOD', 'SUB_HEAD_OF_DEPT', 'SUB_HOD'].includes(role)
+      || ['SUB_HEAD_OF_DEPT', 'SUB_HOD'].includes(subRole);
+  }
 
   applyLeave() {
     this.isLoading = true;
     this.successMessage = '';
     this.errorMessage = '';
 
-    const employee = JSON.parse(localStorage.getItem('employee') || '{}');
+    const employee = JSON.parse(localStorage.getItem('sgsits_auth_user') || '{}');
+
+    if (!employee.id) {
+      this.isLoading = false;
+      this.errorMessage = 'Unable to identify your user session. Please log in again.';
+      return;
+    }
 
     const leave = {
       leaveType: this.leaveType,
@@ -38,9 +56,7 @@ export class ApplyLeave {
       endDate: this.endDate,
       reason: this.reason,
       status: 'Pending',
-      employee: {
-        id: employee.id
-      }
+      employeeId: employee.id
     };
 
     this.auth.applyLeave(leave).subscribe({
@@ -55,11 +71,13 @@ export class ApplyLeave {
         this.reason = '';
 
         console.log(response);
+        this.cdr.detectChanges();
       },
       error: (error) => {
         this.isLoading = false;
         console.error(error);
         this.errorMessage = 'Failed to submit leave application. Please verify details and try again.';
+        this.cdr.detectChanges();
       }
     });
   }

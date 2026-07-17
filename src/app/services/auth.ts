@@ -8,9 +8,8 @@ import { Observable } from 'rxjs';
 export class Auth {
 
   private http = inject(HttpClient);
-
-  private employeeUrl = 'http://localhost:8080/employee';
-  private leaveUrl = 'http://localhost:8080/leave';
+  private employeeUrl = 'https://gateway-service-sc5r.onrender.com/employees';
+  private leaveUrl = 'https://gateway-service-sc5r.onrender.com/leaves';
 
   login(user: any): Observable<any> {
     return this.http.post(`${this.employeeUrl}/login`, user);
@@ -25,11 +24,11 @@ export class Auth {
   }
 
   getAllLeaves(): Observable<any> {
-    return this.http.get(`${this.leaveUrl}/all`);
+    return this.http.get(`${this.leaveUrl}/all?t=${new Date().getTime()}`);
   }
 
   getEmployeeLeaves(id: number): Observable<any> {
-    return this.http.get(`${this.leaveUrl}/employee/${id}`);
+    return this.http.get(`${this.leaveUrl}/employee/${id}?t=${new Date().getTime()}`);
   }
 
   approveLeave(id: number): Observable<any> {

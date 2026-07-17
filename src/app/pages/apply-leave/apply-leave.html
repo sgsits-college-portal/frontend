@@ -27,6 +27,7 @@
       </button>
 
       <button
+        *ngIf="canManageLeaves"
         routerLink="/leave/admin"
         type="button"
         class="btn btn-secondary">
