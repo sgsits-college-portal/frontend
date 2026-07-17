@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router'; // Imported cleanly from router
@@ -18,7 +18,7 @@ export class LeaveHistory implements OnInit {
   isLoading = true;
   errorMessage = '';
 
-  constructor(private auth: Auth) {}
+  constructor(private auth: Auth, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     const employee = JSON.parse(localStorage.getItem('sgsits_auth_user') || '{}');
@@ -34,11 +34,13 @@ export class LeaveHistory implements OnInit {
         this.leaves = Array.isArray(response) ? response : [];
         this.isLoading = false;
         console.log(this.leaves);
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error(error);
         this.isLoading = false;
         this.errorMessage = 'Failed to load leave history. Please refresh and try again.';
+        this.cdr.detectChanges();
       }
     });
   }

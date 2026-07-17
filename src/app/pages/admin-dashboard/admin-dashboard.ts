@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router'; // Added RouterLink import
 import { Auth } from '../../services/auth';
@@ -18,7 +18,7 @@ export class AdminDashboard implements OnInit {
   errorMessage = '';
   canManageLeaves = false;
 
-  constructor(private auth: Auth) {}
+  constructor(private auth: Auth, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.canManageLeaves = this.isLeaveApprover();
@@ -60,11 +60,13 @@ export class AdminDashboard implements OnInit {
       next: (response: any) => {
         this.leaves = Array.isArray(response) ? response : [];
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (error) => {
         console.log(error);
         this.isLoading = false;
         this.errorMessage = 'Failed to load leave requests. Please refresh and try again.';
+        this.cdr.detectChanges();
       }
     });
   }
