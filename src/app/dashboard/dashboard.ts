@@ -181,6 +181,7 @@ export class Dashboard {
       this.router.navigate(['/leave/apply']);
     }
   }
+  }
 
   toggleUserManagement(show: boolean): void {
     this.showUserManagement.set(show);
