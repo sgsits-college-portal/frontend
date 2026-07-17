@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router'; // Added RouterLink import
 import { Auth } from '../../services/auth';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -17,8 +18,9 @@ export class AdminDashboard implements OnInit {
   isLoading = true;
   errorMessage = '';
   canManageLeaves = false;
+  usersMap: Record<number, any> = {};
 
-  constructor(private auth: Auth, private cdr: ChangeDetectorRef) {}
+  constructor(private auth: Auth, private authService: AuthService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.canManageLeaves = this.isLeaveApprover();
@@ -28,7 +30,16 @@ export class AdminDashboard implements OnInit {
       return;
     }
 
-    this.loadLeaves();
+    this.authService.getUsers().subscribe({
+      next: (users) => {
+        users.forEach(u => this.usersMap[u.id] = u);
+        this.loadLeaves();
+      },
+      error: (err) => {
+        console.error('Failed to load users for leave dashboard mapping:', err);
+        this.loadLeaves();
+      }
+    });
   }
 
   get pendingCount(): number {

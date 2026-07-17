@@ -84,7 +84,7 @@
         <thead>
 
           <tr>
-            <th>Employee ID</th>
+            <th>User ID / Details</th>
             <th>Leave Type</th>
             <th>Start Date</th>
             <th>End Date</th>
@@ -99,7 +99,18 @@
 
           <tr *ngFor="let leave of leaves">
 
-            <td>#{{leave.employeeId}}</td>
+            <td>
+              <div *ngIf="usersMap[leave.employeeId]" style="line-height: 1.4;">
+                <strong>{{ usersMap[leave.employeeId].fullName }}</strong>
+                <br>
+                <small class="text-muted" style="color: #6c757d;">User ID: #{{ leave.employeeId }} ({{ usersMap[leave.employeeId].role }})</small>
+                <br *ngIf="usersMap[leave.employeeId].email">
+                <small *ngIf="usersMap[leave.employeeId].email" class="text-muted" style="color: #6c757d;">{{ usersMap[leave.employeeId].email }}</small>
+              </div>
+              <div *ngIf="!usersMap[leave.employeeId]">
+                User ID: #{{ leave.employeeId }}
+              </div>
+            </td>
 
             <td>{{leave.leaveType}}</td>
 
