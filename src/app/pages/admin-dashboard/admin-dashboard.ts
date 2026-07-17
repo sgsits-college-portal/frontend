@@ -14,20 +14,57 @@ import { Auth } from '../../services/auth';
 export class AdminDashboard implements OnInit {
 
   leaves: any[] = [];
+  isLoading = true;
+  errorMessage = '';
+  canManageLeaves = false;
 
   constructor(private auth: Auth) {}
 
   ngOnInit(): void {
+    this.canManageLeaves = this.isLeaveApprover();
+
+    if (!this.canManageLeaves) {
+      this.isLoading = false;
+      return;
+    }
+
     this.loadLeaves();
   }
 
+  get pendingCount(): number {
+    return this.leaves.filter(leave => leave.status === 'Pending').length;
+  }
+
+  get approvedCount(): number {
+    return this.leaves.filter(leave => leave.status === 'Approved').length;
+  }
+
+  get rejectedCount(): number {
+    return this.leaves.filter(leave => leave.status === 'Rejected').length;
+  }
+
+  private isLeaveApprover(): boolean {
+    const user = JSON.parse(localStorage.getItem('sgsits_auth_user') || '{}');
+    const role = (user.role || '').toUpperCase().trim();
+    const subRole = (user.subRole || '').toUpperCase().trim();
+
+    return ['ADMIN', 'HEAD', 'HOD', 'SUB_HEAD_OF_DEPT', 'SUB_HOD'].includes(role)
+      || ['SUB_HEAD_OF_DEPT', 'SUB_HOD'].includes(subRole);
+  }
+
   loadLeaves() {
+    this.isLoading = true;
+    this.errorMessage = '';
+
     this.auth.getAllLeaves().subscribe({
       next: (response: any) => {
-        this.leaves = response;
+        this.leaves = Array.isArray(response) ? response : [];
+        this.isLoading = false;
       },
       error: (error) => {
         console.log(error);
+        this.isLoading = false;
+        this.errorMessage = 'Failed to load leave requests. Please refresh and try again.';
       }
     });
   }

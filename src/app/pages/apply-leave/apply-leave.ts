@@ -17,13 +17,25 @@ export class ApplyLeave {
   startDate = '';
   endDate = '';
   reason = '';
+  canManageLeaves = false;
 
   // UI state managers
   isLoading = false;
   successMessage = '';
   errorMessage = '';
 
-  constructor(private auth: Auth) {}
+  constructor(private auth: Auth) {
+    this.canManageLeaves = this.isLeaveApprover();
+  }
+
+  private isLeaveApprover(): boolean {
+    const user = JSON.parse(localStorage.getItem('sgsits_auth_user') || '{}');
+    const role = (user.role || '').toUpperCase().trim();
+    const subRole = (user.subRole || '').toUpperCase().trim();
+
+    return ['ADMIN', 'HEAD', 'HOD', 'SUB_HEAD_OF_DEPT', 'SUB_HOD'].includes(role)
+      || ['SUB_HEAD_OF_DEPT', 'SUB_HOD'].includes(subRole);
+  }
 
   applyLeave() {
     this.isLoading = true;
@@ -31,6 +43,12 @@ export class ApplyLeave {
     this.errorMessage = '';
 
     const employee = JSON.parse(localStorage.getItem('sgsits_auth_user') || '{}');
+
+    if (!employee.id) {
+      this.isLoading = false;
+      this.errorMessage = 'Unable to identify your user session. Please log in again.';
+      return;
+    }
 
     const leave = {
       leaveType: this.leaveType,
