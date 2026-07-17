@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -24,7 +24,7 @@ export class ApplyLeave {
   successMessage = '';
   errorMessage = '';
 
-  constructor(private auth: Auth) {
+  constructor(private auth: Auth, private cdr: ChangeDetectorRef) {
     this.canManageLeaves = this.isLeaveApprover();
   }
 
@@ -71,11 +71,13 @@ export class ApplyLeave {
         this.reason = '';
 
         console.log(response);
+        this.cdr.detectChanges();
       },
       error: (error) => {
         this.isLoading = false;
         console.error(error);
         this.errorMessage = 'Failed to submit leave application. Please verify details and try again.';
+        this.cdr.detectChanges();
       }
     });
   }

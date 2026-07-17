@@ -171,8 +171,15 @@ export class Dashboard {
       }
     }
   else if (service.id === 3 && service.badge === 'Active') {
-  this.router.navigate(['/leave/apply']);
-}
+    const currentUser = this.user();
+    if (currentUser) {
+      const role = (currentUser.role || '').toUpperCase().trim();
+      const subRole = (currentUser.subRole || '').toUpperCase().trim();
+      const isAdmin = ['ADMIN', 'HEAD', 'HOD', 'SUB_HEAD_OF_DEPT', 'SUB_HOD'].includes(role) || ['SUB_HEAD_OF_DEPT', 'SUB_HOD'].includes(subRole);
+      this.router.navigate([isAdmin ? '/leave/admin' : '/leave/apply']);
+    } else {
+      this.router.navigate(['/leave/apply']);
+    }
   }
 
   toggleUserManagement(show: boolean): void {

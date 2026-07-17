@@ -24,11 +24,11 @@ export class Auth {
   }
 
   getAllLeaves(): Observable<any> {
-    return this.http.get(`${this.leaveUrl}/all`);
+    return this.http.get(`${this.leaveUrl}/all?t=${new Date().getTime()}`);
   }
 
   getEmployeeLeaves(id: number): Observable<any> {
-    return this.http.get(`${this.leaveUrl}/employee/${id}`);
+    return this.http.get(`${this.leaveUrl}/employee/${id}?t=${new Date().getTime()}`);
   }
 
   approveLeave(id: number): Observable<any> {
