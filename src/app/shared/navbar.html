@@ -11,6 +11,10 @@
 
   <!-- User Profile & Action Box -->
   <div class="nav-user-actions" *ngIf="user() as currentUser">
+    <button class="btn-logout" (click)="logout()" title="Log Out">
+      <i class="bi bi-box-arrow-right"></i>
+      <span>Logout</span>
+    </button>
     <div class="user-profile-card">
       <div class="avatar-circle">
         {{ currentUser.fullName.charAt(0) }}
@@ -22,9 +26,6 @@
           </span>
       </div>
     </div>
-    <button class="btn-logout" (click)="logout()" title="Log Out">
-      <i class="bi bi-box-arrow-right"></i>
-      <span>Logout</span>
-    </button>
+
   </div>
 </header>
