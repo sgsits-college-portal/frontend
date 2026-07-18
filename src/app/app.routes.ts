@@ -50,7 +50,7 @@ export const routes: Routes = [
     component: RegisterParticipantComponent,
     canActivate: [authGuard, roleGuard],
     data: {
-      roles: ['STUDENT', 'FACULTY', 'ADMIN', 'STAFF'],
+      roles: ['STUDENT', 'FACULTY', 'ADMIN', 'STAFF', 'HOD'],
       subRoles: ['EVENT_MANAGER']
     }
   },
