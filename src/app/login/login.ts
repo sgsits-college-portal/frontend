@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
-type PortalRole = 'STUDENT' | 'FACULTY' | 'STAFF' | 'HEAD' | 'ADMIN';
+  type PortalRole = 'STUDENT' | 'FACULTY' | 'STAFF' | 'HOD' | 'ADMIN';
 
 interface ServiceModule {
   id: number;
@@ -90,7 +90,7 @@ export class Login {
           placeholder: 'e.g., staff@sgsits.ac.in',
           helpText: 'Enter your registered staff email (ends with @sgsits.ac.in).'
         };
-      case 'HEAD':
+      case 'HOD':
         return {
           label: 'College Email Address',
           placeholder: 'e.g., hod_cs@sgsits.ac.in',

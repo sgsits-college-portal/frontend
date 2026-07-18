@@ -68,7 +68,7 @@
       <div class="role-selector-container">
         <span class="selector-label">Select Your Role</span>
         <div class="role-grid">
-          @for (role of ['STUDENT', 'FACULTY', 'STAFF', 'HEAD', 'ADMIN']; track role) {
+          @for (role of ['STUDENT', 'FACULTY', 'STAFF', 'HOD', 'ADMIN']; track role) {
           <button type="button" class="role-tab-btn" [class.active]="activeRole() === role" (click)="selectRole(role)">
             <span class="role-name">{{ role }}</span>
           </button>

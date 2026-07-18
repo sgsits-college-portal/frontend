@@ -91,7 +91,7 @@ export class EventAuthService {
     const subRole = this.getCurrentSubRole();
     return (
       role === 'ADMIN' ||
-      role === 'HEAD' ||
+      role === 'HOD' ||
       (role === 'STAFF' && subRole === SubRole.EVENT_MANAGER)
     );
   }
@@ -103,7 +103,10 @@ export class EventAuthService {
    */
   canRegisterForEvent(): boolean {
     const role = this.getCurrentRole();
-    return role === 'STUDENT' || role === 'FACULTY';
+    return role === 'STUDENT' ||
+             role === 'FACULTY' ||
+             role === 'HEAD' ||
+             role === 'HOD';
   }
 
   /**
